@@ -1,19 +1,16 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import connectDB from './config/db.js';
+
 const app = express()
 const port = 3001;
 
 
-mongoose
-.connect("mongodb://localhost:27017/sihatihub")
-.then(()=> console.log("Mongo connected!"))
-.catch((err) => console.log("Failed to connect!",err));
+connectDB();
 
-
-app.get("/", (req, res) => {
-    res.send("<h2>Hi Ayoub</h2>")
+app.get("/",(req,res)=>{
+    res.send("<h2>Hello Ayoub</h2>")
 })
 
+app.listen(port, () => console.log(`listening on port http://localhost:${port}`))
 
-
-app.listen(port,()=> console.log(`listening on port http://localhost:${port}`))
+export default app;
