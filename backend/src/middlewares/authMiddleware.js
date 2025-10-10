@@ -25,3 +25,52 @@ export const isAdmin = (req, res, next) => {
     }
     next();
 };
+
+/**
+ * Middleware pour autoriser uniquement certains rôles
+ * @param  {...string} roles - Les rôles autorisés (ex: 'doctor', 'patient', 'admin')
+ */
+export const authorize = (...roles) => {
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({ 
+                success: false, 
+                message: "Non authentifié" 
+            });
+        }
+
+        if (!roles.includes(req.user.role)) {
+            return res.status(403).json({
+                success: false,
+                message: `Le rôle ${req.user.role} n'est pas autorisé à accéder à cette ressource`
+            });
+        }
+        next();
+    };
+};
+
+/**
+ * Middleware pour vérifier le rôle de médecin
+ */
+export const isDoctor = (req, res, next) => {
+    if (req.user.role !== 'doctor') {
+        return res.status(403).json({ 
+            success: false,
+            message: "Accès réservé aux médecins" 
+        });
+    }
+    next();
+};
+
+/**
+ * Middleware pour vérifier le rôle de patient
+ */
+export const isPatient = (req, res, next) => {
+    if (req.user.role !== 'patient') {
+        return res.status(403).json({ 
+            success: false,
+            message: "Accès réservé aux patients" 
+        });
+    }
+    next();
+};
