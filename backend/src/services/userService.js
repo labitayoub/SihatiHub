@@ -2,7 +2,7 @@ import userModel from "../models/User.js";
 import bcrypt from "bcryptjs";
 
 export const register = async ({ firstName, lastName, email, password, phone, birthDate, address, role, specialty }) => {
-
+ 
     const findUser = await userModel.findOne({ email });
 
     if (findUser) return { data: "User already exists", statusCode: 400 };
@@ -39,7 +39,7 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await userModel.create({ 
+    const newUser = await userModel.create({ 
         firstName, 
         lastName, 
         email, 
@@ -50,19 +50,19 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
         role,
         specialty
     });
-
-    return { data: user, statusCode: 201 };
+await newUser.save();
+return { data: user, statusCode: 201 };
 };
 
 export const login = async ({ email, password }) => {
 
-    const user = await userModel.findOne({ email });
+    const findUser = await userModel.findOne({ email });
 
-    if (!user) return { data: "User not found", statusCode: 404 };
+    if (!findUser) return { data: "User not found", statusCode: 404 };
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, findUser.password);
 
-    if (!isMatch) return { data: "Invalid credentials", statusCode: 401 };
+    if (!passwordMatch) return { data: "Invalid credentials", statusCode: 401 };
 
     return { data: user, statusCode: 200 };
 };
