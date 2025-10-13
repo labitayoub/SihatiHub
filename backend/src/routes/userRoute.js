@@ -5,8 +5,8 @@ import {register, login} from '../services/userService.js';
 const router = express.Router();
 
 router.post('/register', async (req,res) => {
-    const { firstName, lastName, email, password, phone, birthDate, address, specialty } = req.body;
-const {statusCode, data} = await register({ firstName, lastName, email, password, phone, birthDate, address, specialty });
+    const { firstName, lastName, email, password, phone, birthDate, address, role, specialty } = req.body;
+const {statusCode, data} = await register({ firstName, lastName, email, password, phone, birthDate, address, role, specialty });
 res.status(statusCode).send(data)
 });
 

@@ -1,11 +1,14 @@
 import userModel from "../models/User.js";
 import bcrypt from "bcrypt";
 
-export const register = async ({ firstName, lastName, email, password, phone, birthDate, address, specialty }) => {
+export const register = async ({ firstName, lastName, email, password, phone, birthDate, address, role, specialty }) => {
  
-    const findUser = await userModel.findOne({ email });
-
-    if (findUser) return { data: "User already exists", statusCode: 400 };
+    if (!firstName || !lastName || !phone || !birthDate || !address || !role || !email || !password) {
+        return {
+            data: "Tous les champs sont requis",
+            statusCode: 400
+        };
+    }
 
     if(!password){
         return{
@@ -29,13 +32,6 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
         };
     }
 
-    if (!firstName || !lastName || !phone || !birthDate || !address || !specialty) {
-        return {
-            data: "Tous les champs sont requis",
-            statusCode: 400
-        };
-    }
-
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
         return {
@@ -43,6 +39,17 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
             statusCode: 400
         };
     }
+
+    if (role === 'medecin' && !specialty) {
+        return {
+            data: "La spécialité est requise pour les médecins",
+            statusCode: 400
+        };
+    }
+
+    const findUser = await userModel.findOne({ email });
+
+    if (findUser) return { data: "User already exists", statusCode: 400 };
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -54,10 +61,10 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
         phone,
         birthDate,
         address,
-        // role,
-        specialty
+        role,
+        specialty: role === 'medecin' ? specialty : undefined
     });
-await newUser.save();
+// await newUser.save();
 return { data: newUser, statusCode: 201 };
 };
 
@@ -71,5 +78,5 @@ export const login = async ({ email, password }) => {
 
     if (!passwordMatch) return { data: "Invalid credentials", statusCode: 401 };
 
-    return { data: user, statusCode: 200 };
+    return { data: findUser, statusCode: 200 };
 };
