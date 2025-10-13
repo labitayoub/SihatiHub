@@ -30,11 +30,11 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    role: {
-        type: Schema.Types.ObjectId,
-        ref: 'Role',
-        required: true
-    },
+    // role: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'Role',
+    //     required: true
+    // },
     specialty: {
         type: String,
         required: true

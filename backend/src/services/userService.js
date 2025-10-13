@@ -1,11 +1,18 @@
 import userModel from "../models/User.js";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
-export const register = async ({ firstName, lastName, email, password, phone, birthDate, address, role, specialty }) => {
+export const register = async ({ firstName, lastName, email, password, phone, birthDate, address, specialty }) => {
  
     const findUser = await userModel.findOne({ email });
 
     if (findUser) return { data: "User already exists", statusCode: 400 };
+
+    if(!password){
+        return{
+            data: "Le mot de passe est requis",
+            statusCode : 400
+        }
+    }
 
     if (password.length < 8) {
         return {
@@ -22,7 +29,7 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
         };
     }
 
-    if (!firstName || !lastName || !phone || !birthDate || !address || !role || !specialty) {
+    if (!firstName || !lastName || !phone || !birthDate || !address || !specialty) {
         return {
             data: "Tous les champs sont requis",
             statusCode: 400
@@ -47,11 +54,11 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
         phone,
         birthDate,
         address,
-        role,
+        // role,
         specialty
     });
 await newUser.save();
-return { data: user, statusCode: 201 };
+return { data: newUser, statusCode: 201 };
 };
 
 export const login = async ({ email, password }) => {
