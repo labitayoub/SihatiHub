@@ -2,6 +2,7 @@ import express from 'express';
 import connectDB from './config/db.js';
 import userRoute from './routes/userRoute.js'
 
+
 const app = express();
 const port = 3001;
 

@@ -1,8 +1,12 @@
 import userModel from "../models/User.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const register = async ({ firstName, lastName, email, password, phone, birthDate, address, role, specialty }) => {
- 
+
     if (!firstName || !lastName || !phone || !birthDate || !address || !role || !email || !password) {
         return {
             data: "Tous les champs sont requis",
@@ -10,10 +14,10 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
         };
     }
 
-    if(!password){
-        return{
+    if (!password) {
+        return {
             data: "Le mot de passe est requis",
-            statusCode : 400
+            statusCode: 400
         }
     }
 
@@ -53,10 +57,10 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await userModel.create({ 
-        firstName, 
-        lastName, 
-        email, 
+    const newUser = await userModel.create({
+        firstName,
+        lastName,
+        email,
         password: hashedPassword,
         phone,
         birthDate,
@@ -64,8 +68,14 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
         role,
         specialty: role === 'medecin' ? specialty : undefined
     });
-// await newUser.save();
-return { data: newUser, statusCode: 201 };
+    // await newUser.save();
+    return { data: generateJWT({            
+        id: newUser._id, 
+            firstName: newUser.firstName, 
+            lastName: newUser.lastName, 
+            email: newUser.email, 
+            role: newUser.role 
+        }), statusCode: 201 };
 };
 
 export const login = async ({ email, password }) => {
@@ -78,5 +88,14 @@ export const login = async ({ email, password }) => {
 
     if (!passwordMatch) return { data: "Invalid credentials", statusCode: 401 };
 
-    return { data: findUser, statusCode: 200 };
+    return { data: generateJWT({     
+        id: findUser._id,
+            email: findUser.email,
+            firstName: findUser.firstName, 
+            lastName: findUser.lastName, 
+            role: findUser.role}), statusCode: 200 };
+};
+
+const generateJWT = (data) => {
+    return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1h' })
 };
