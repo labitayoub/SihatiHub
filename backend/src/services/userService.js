@@ -5,28 +5,18 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const register = async ({ firstName, lastName, email, password, phone, birthDate, address, role, specialty }) => {
+export const register = async ({ firstName, lastName, email, password, phone, birthDate, address }) => {
 
     if (!firstName || !lastName || !phone || !birthDate || !address || !email || !password) {
         return {
-            data: "Tous les champs sont requis",
+            data: { message: "Tous les champs sont requis" },
             statusCode: 400
         };
     }
 
-    // Forcer le rôle patient pour l'inscription publique
-    const userRole = 'patient';
-
-    if (!password) {
-        return {
-            data: "Le mot de passe est requis",
-            statusCode: 400
-        }
-    }
-
     if (password.length < 8) {
         return {
-            data: "Le mot de passe doit contenir au moins 8 caractères",
+            data: { message: "Le mot de passe doit contenir au moins 8 caractères" },
             statusCode: 400
         };
     }
@@ -34,7 +24,7 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return {
-            data: "Format d'email invalide",
+            data: { message: "Format d'email invalide" },
             statusCode: 400
         };
     }
@@ -42,21 +32,19 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
         return {
-            data: "Format de numéro de téléphone invalide",
-            statusCode: 400
-        };
-    }
-
-    if (role === 'medecin' && !specialty) {
-        return {
-            data: "La spécialité est requise pour les médecins",
+            data: { message: "Format de numéro de téléphone invalide" },
             statusCode: 400
         };
     }
 
     const findUser = await userModel.findOne({ email });
 
-    if (findUser) return { data: "User already exists", statusCode: 400 };
+    if (findUser) {
+        return { 
+            data: { message: "Cet email est déjà utilisé" }, 
+            statusCode: 400 
+        };
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -68,39 +56,53 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
         phone,
         birthDate,
         address,
-        role: userRole, // Toujours patient
+        role: 'patient',
         specialty: undefined
     });
-    // await newUser.save();
-    return { data: generateJWT({            
+
+    const token = generateJWT({            
         id: newUser._id, 
-            firstName: newUser.firstName, 
-            lastName: newUser.lastName, 
-            email: newUser.email, 
-            role: newUser.role 
-        }), statusCode: 201 };
+        firstName: newUser.firstName, 
+        lastName: newUser.lastName, 
+        email: newUser.email, 
+        role: newUser.role 
+    });
+
+    return { 
+        data: {
+            message: "Inscription réussie",
+            token,
+            user: {
+                id: newUser._id,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
+                email: newUser.email,
+                role: newUser.role
+            }
+        }, 
+        statusCode: 201 
+    };
 };
 
-// Nouvelle fonction pour admin
 export const createStaff = async ({ firstName, lastName, email, password, phone, birthDate, address, role, specialty }) => {
 
     if (!firstName || !lastName || !phone || !birthDate || !address || !role || !email || !password) {
         return {
-            data: "Tous les champs sont requis",
+            data: { message: "Tous les champs sont requis" },
             statusCode: 400
         };
     }
 
     if (!['medecin', 'infirmier'].includes(role)) {
         return {
-            data: "Rôle invalide. Utilisez 'medecin' ou 'infirmier'",
+            data: { message: "Rôle invalide. Utilisez 'medecin' ou 'infirmier'" },
             statusCode: 400
         };
     }
 
     if (password.length < 8) {
         return {
-            data: "Le mot de passe doit contenir au moins 8 caractères",
+            data: { message: "Le mot de passe doit contenir au moins 8 caractères" },
             statusCode: 400
         };
     }
@@ -108,7 +110,7 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         return {
-            data: "Format d'email invalide",
+            data: { message: "Format d'email invalide" },
             statusCode: 400
         };
     }
@@ -116,20 +118,25 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(phone.replace(/\s+/g, ''))) {
         return {
-            data: "Format de numéro de téléphone invalide",
+            data: { message: "Format de numéro de téléphone invalide" },
             statusCode: 400
         };
     }
 
     if (role === 'medecin' && !specialty) {
         return {
-            data: "La spécialité est requise pour les médecins",
+            data: { message: "La spécialité est requise pour les médecins" },
             statusCode: 400
         };
     }
 
     const findUser = await userModel.findOne({ email });
-    if (findUser) return { data: "User already exists", statusCode: 400 };
+    if (findUser) {
+        return { 
+            data: { message: "Cet email est déjà utilisé" }, 
+            statusCode: 400 
+        };
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -147,13 +154,14 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
 
     return { 
         data: {
-            message: "Compte créé avec succès",
+            message: `${role === 'medecin' ? 'Médecin' : 'Infirmier'} créé avec succès`,
             user: {
                 id: newUser._id,
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
                 email: newUser.email,
-                role: newUser.role
+                role: newUser.role,
+                ...(role === 'medecin' && { specialty: newUser.specialty })
             }
         }, 
         statusCode: 201 
@@ -162,22 +170,55 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
 
 export const login = async ({ email, password }) => {
 
+    if (!email || !password) {
+        return {
+            data: { message: "Email et mot de passe sont requis" },
+            statusCode: 400
+        };
+    }
+
     const findUser = await userModel.findOne({ email });
 
-    if (!findUser) return { data: "User not found", statusCode: 404 };
+    if (!findUser) {
+        return { 
+            data: { message: "Email ou mot de passe incorrect" }, 
+            statusCode: 401 
+        };
+    }
 
     const passwordMatch = await bcrypt.compare(password, findUser.password);
 
-    if (!passwordMatch) return { data: "Invalid credentials", statusCode: 401 };
+    if (!passwordMatch) {
+        return { 
+            data: { message: "Email ou mot de passe incorrect" }, 
+            statusCode: 401 
+        };
+    }
 
-    return { data: generateJWT({     
+    const token = generateJWT({     
         id: findUser._id,
-            email: findUser.email,
-            firstName: findUser.firstName, 
-            lastName: findUser.lastName, 
-            role: findUser.role}), statusCode: 200 };
+        email: findUser.email,
+        firstName: findUser.firstName, 
+        lastName: findUser.lastName, 
+        role: findUser.role
+    });
+
+    return { 
+        data: {
+            message: "Connexion réussie",
+            token,
+            user: {
+                id: findUser._id,
+                firstName: findUser.firstName,
+                lastName: findUser.lastName,
+                email: findUser.email,
+                role: findUser.role
+            }
+        }, 
+        statusCode: 200 
+    };
 };
 
 const generateJWT = (data) => {
-    return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1h' })
+    return jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '24h' })  // Token valide 24h
 };
