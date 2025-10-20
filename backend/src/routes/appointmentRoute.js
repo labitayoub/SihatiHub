@@ -19,8 +19,7 @@ import {
 
 const router = express.Router();
 
-// ========== ROUTES PUBLIQUES (sans authentification) ==========
-// Obtenir les horaires d'un médecin
+
 router.get('/horaires/:doctorId', obtenirHoraires);
 
 // ========== ROUTES PROTÉGÉES - MÉDECIN ==========

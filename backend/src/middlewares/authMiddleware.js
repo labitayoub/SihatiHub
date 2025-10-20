@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const authenticate = (req, res, next) => {
-    try {
+    try { 
         const token = req.headers.authorization?.split(' ')[1];
         
         if (!token) {
@@ -26,10 +26,7 @@ export const isAdmin = (req, res, next) => {
     next();
 };
 
-/**
- * Middleware pour autoriser uniquement certains rôles
- * @param  {...string} roles - Les rôles autorisés (ex: 'doctor', 'patient', 'admin')
- */
+
 export const authorize = (...roles) => {
     return (req, res, next) => {
         if (!req.user) {
@@ -49,9 +46,6 @@ export const authorize = (...roles) => {
     };
 };
 
-/**
- * Middleware pour vérifier le rôle de médecin
- */
 export const isDoctor = (req, res, next) => {
     if (req.user.role !== 'doctor') {
         return res.status(403).json({ 
@@ -62,9 +56,7 @@ export const isDoctor = (req, res, next) => {
     next();
 };
 
-/**
- * Middleware pour vérifier le rôle de patient
- */
+
 export const isPatient = (req, res, next) => {
     if (req.user.role !== 'patient') {
         return res.status(403).json({ 

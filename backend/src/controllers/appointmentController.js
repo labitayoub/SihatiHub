@@ -2,7 +2,8 @@ import Appointment from '../models/Appointment.js';
 import DoctorSchedule from '../models/DoctorSchedule.js';
 
 // Fonction pour générer les créneaux horaires
-function genererCreneaux(debut, fin, duree) {
+
+function genererCreneaux(debut, fin, dureeConsultation) {
   const creneaux = [];
   let [heureDebut, minuteDebut] = debut.split(':').map(Number);
   let [heureFin, minuteFin] = fin.split(':').map(Number);
@@ -14,17 +15,12 @@ function genererCreneaux(debut, fin, duree) {
     const heure = Math.floor(currentMinutes / 60);
     const minute = currentMinutes % 60;
     creneaux.push(`${String(heure).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
-    currentMinutes += duree;
+    currentMinutes += dureeConsultation;
   }
   
   return creneaux;
 }
 
-/**
- * @desc    MÉDECIN: Définir ses horaires de travail
- * @route   POST /rendez-vous/horaires
- * @access  Public (à protéger plus tard)
- */
 export const definirHoraires = async (req, res) => {
   try {
     const { doctorId, horaires, dureeConsultation } = req.body;
@@ -48,11 +44,7 @@ export const definirHoraires = async (req, res) => {
   }
 };
 
-/**
- * @desc    PATIENT: Voir les créneaux disponibles d'un médecin
- * @route   GET /rendez-vous/disponibles?doctorId=xxx&date=xxx
- * @access  Public
- */
+
 export const voirCreneauxDisponibles = async (req, res) => {
   try {
     const { doctorId, date } = req.query;
@@ -137,7 +129,7 @@ export const reserverRendezVous = async (req, res) => {
       });
     }
 
-    // ✅ VÉRIFICATION 1: Le patient a-t-il déjà un rendez-vous actif avec ce docteur ?
+    // VÉRIFICATION 1: Le patient a-t-il déjà un rendez-vous actif avec ce docteur ?
     const rendezvousExistant = await Appointment.findOne({
       doctorId,
       patientId,
@@ -156,7 +148,7 @@ export const reserverRendezVous = async (req, res) => {
       });
     }
 
-    // ✅ VÉRIFICATION 2: Le créneau est-il disponible ?
+    // VÉRIFICATION 2: Le créneau est-il disponible ?
     const creneauPris = await Appointment.findOne({
       doctorId,
       date,
@@ -171,7 +163,7 @@ export const reserverRendezVous = async (req, res) => {
       });
     }
 
-    // ✅ Créer le rendez-vous (1 seul rendez-vous autorisé)
+    // Créer le rendez-vous (1 seul rendez-vous autorisé)
     const rendezVous = await Appointment.create({
       doctorId,
       patientId,
@@ -352,7 +344,7 @@ export const peutReserver = async (req, res) => {
   try {
     const { doctorId, patientId } = req.params;
 
-    // Vérifier si le patient a déjà un rendez-vous actif
+    // Vérifier si le patient a déjà un rendez-vous actif 
     const rendezvousActif = await Appointment.findOne({
       doctorId,
       patientId,
