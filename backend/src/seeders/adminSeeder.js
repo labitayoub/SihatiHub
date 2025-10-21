@@ -12,7 +12,7 @@ const seedAdmin = async () => {
         const existingAdmin = await User.findOne({ email: 'admin@sihati.com' });
 
         if (existingAdmin) {
-            console.log('✅ Admin existe déjà');
+            console.log(' Admin existe déjà');
             process.exit(0);
         }
 
@@ -27,10 +27,10 @@ const seedAdmin = async () => {
             role: 'admin'
         });
 
-        console.log('✅ Admin créé: admin@sihati.com / Admin@2024');
+        console.log('Admin créé: admin@sihati.com / Admin@2024');
         process.exit(0);
     } catch (error) {
-        console.error('❌ Erreur:', error.message);
+        console.error('Erreur:', error.message);
         process.exit(1);
     }
 };

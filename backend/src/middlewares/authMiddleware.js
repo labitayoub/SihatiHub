@@ -13,6 +13,7 @@ export const authenticate = (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
+        console.log(req.user);
         next();
     } catch (error) {
         return res.status(401).json({ message: "Token invalide" });
@@ -47,7 +48,8 @@ export const authorize = (...roles) => {
 };
 
 export const isDoctor = (req, res, next) => {
-    if (req.user.role !== 'doctor') {
+   
+    if (req.user.role != 'medecin') {
         return res.status(403).json({ 
             success: false,
             message: "Accès réservé aux médecins" 
@@ -58,7 +60,7 @@ export const isDoctor = (req, res, next) => {
 
 
 export const isPatient = (req, res, next) => {
-    if (req.user.role !== 'patient') {
+    if (req.user.role != 'patient') {
         return res.status(403).json({ 
             success: false,
             message: "Accès réservé aux patients" 

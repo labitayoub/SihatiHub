@@ -16,12 +16,11 @@ const scheduleSchema = new mongoose.Schema({
         jeudi: { debut: String, fin: String },
         vendredi: { debut: String, fin: String },
         samedi: { debut: String, fin: String },
-        dimanche: { debut: String, fin: String }
     },
     dureeConsultation: {
         type: Number,
         required: true,
-        default: 30
+        default: 60
     }
 }, { timestamps: true });
 export default mongoose.model('DoctorSchedule', scheduleSchema);
