@@ -19,7 +19,6 @@ import {
 
 const router = express.Router();
 
-
 router.get('/horaires/:doctorId', obtenirHoraires);
 
 // ========== ROUTES PROTÉGÉES - MÉDECIN ==========

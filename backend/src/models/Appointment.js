@@ -27,14 +27,14 @@ const appointmentSchema = new mongoose.Schema({
     motif: String
 }, { timestamps: true });
 
-// Index pour éviter les doubles réservations sur le même créneau
+
 appointmentSchema.index({ doctorId: 1, date: 1, time: 1 }, { unique: true });
 
-// Index pour limiter un patient à UNE SEULE consultation active avec un docteur
 appointmentSchema.index(
     { doctorId: 1, patientId: 1, status: 1 }, 
     { 
         unique: true, 
+        // https://www.mongodb.com/docs/manual/core/index-partial/
         partialFilterExpression: { 
             status: { $in: ['en_attente', 'confirme'] } 
         }

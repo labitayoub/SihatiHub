@@ -29,6 +29,8 @@ export const definirHoraires = async (req, res) => {
       { doctorId },
       { doctorId, horaires, dureeConsultation },
       { upsert: true, new: true }
+
+      //upsert: true => create if not exists,, new: true => retourne le document mis à jour (pas l’ancien)
     );
 
     res.status(200).json({
@@ -48,7 +50,6 @@ export const definirHoraires = async (req, res) => {
 export const voirCreneauxDisponibles = async (req, res) => {
   try {
     const { doctorId, date } = req.query;
-
     if (!doctorId || !date) {
       return res.status(400).json({
         success: false,
@@ -117,6 +118,7 @@ export const voirCreneauxDisponibles = async (req, res) => {
  * @route   POST /rendez-vous/reserver
  * @access  Private/Patient
  */
+
 export const reserverRendezVous = async (req, res) => {
   try {
     const { doctorId, patientId, date, time, motif } = req.body;
@@ -199,6 +201,7 @@ export const reserverRendezVous = async (req, res) => {
  * @route   GET /rendez-vous/mes-rendez-vous?userId=xxx&role=xxx
  * @access  Public (à protéger plus tard)
  */
+
 export const mesRendezVous = async (req, res) => {
   try {
     const { userId, role } = req.query;
@@ -237,6 +240,7 @@ export const mesRendezVous = async (req, res) => {
  * @route   PATCH /rendez-vous/:id/confirmer
  * @access  Public (à protéger plus tard)
  */
+
 export const confirmerRendezVous = async (req, res) => {
   try {
     const { id } = req.params;
