@@ -129,9 +129,9 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
             statusCode: 400
         };
     }
-    if (role === 'lab'|| 'pharmacien' && !nom) {
+    if ((role === 'lab' || role === 'pharmacien') && !nom) {
         return {
-            data: { message: "La le nom est requise" },
+            data: { message: "Le nom est requis pour le laboratoire ou le pharmacien" },
             statusCode: 400
         };
     }
@@ -156,7 +156,7 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
         address,
         role,
         specialty: role === 'medecin' ? specialty : undefined,
-        nom: role === 'lab'|| 'pharmacien' ? nom : undefined
+        nom: (role === 'lab' || role === 'pharmacien') ? nom : undefined
     });
 
     return { 
