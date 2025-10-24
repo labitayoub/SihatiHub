@@ -253,22 +253,32 @@ export const confirmerRendezVous = async (req, res) => {
      .populate('patientId', 'name email');
 
     if (!rendezVous) {
-      return res.status(404).json({
-        success: false,
-        message: 'Rendez-vous non trouvé'
-      });
+      return res.status(404).json({ success: false, message: 'Rendez-vous non trouvé' });
     }
 
+        // Création automatique du dossier médical si inexistant
+
+    const existingRecord = await MedicalRecord.findOne({
+      patientId: rendezVous.patientId._id,
+      doctorId: rendezVous.doctorId._id
+    });
+
+    if (!existingRecord) {
+      await MedicalRecord.create({
+        patientId: rendezVous.patientId._id,
+        doctorId: rendezVous.doctorId._id,
+        rendezVousId: rendezVous._id,
+        rendezVousDate: rendezVous.date,
+        notes: ""
+      });
+    }
     res.status(200).json({
       success: true,
       message: 'Rendez-vous confirmé',
       data: rendezVous
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 

@@ -93,7 +93,7 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
         };
     }
 
-    if (!['medecin', 'infirmier'].includes(role)) {
+if (!['medecin', 'infirmier', 'pharmacien', 'lab'].includes(role)) {
         return {
             data: { message: "Rôle invalide. Utilisez 'medecin' ou 'infirmier'" },
             statusCode: 400
