@@ -256,25 +256,37 @@ export const confirmerRendezVous = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Rendez-vous non trouvé' });
     }
 
-        // Création automatique du dossier médical si inexistant
+    // Création automatique du dossier médical si inexistant (patient uniquement)
+    let medicalRecord = await MedicalRecord.findOne({ patient: rendezVous.patientId._id });
 
-    const existingRecord = await MedicalRecord.findOne({
-      patientId: rendezVous.patientId._id,
-      doctorId: rendezVous.doctorId._id
-    });
-
-    if (!existingRecord) {
-      await MedicalRecord.create({
-        patientId: rendezVous.patientId._id,
-        doctorId: rendezVous.doctorId._id,
-        rendezVousId: rendezVous._id,
-        rendezVousDate: rendezVous.date,
-        notes: ""
+    if (!medicalRecord) {
+      medicalRecord = await MedicalRecord.create({
+        patient: rendezVous.patientId._id,
+        consultations: []
       });
     }
+
+    // Création de l'ordonnance (vide ou à compléter)
+    const ordonnance = await Ordonnance.create({
+      pharmacien: null, // à compléter plus tard
+      medicaments: []
+    });
+
+    // Création de la consultation
+    const consultation = await Consultation.create({
+      date: new Date(rendezVous.date),
+      patient: rendezVous.patientId._id,
+      doctor: rendezVous.doctorId._id,
+      ordonnance: ordonnance._id
+    });
+
+    // Ajout de la consultation au dossier médical
+    medicalRecord.consultations.push(consultation._id);
+    await medicalRecord.save();
+
     res.status(200).json({
       success: true,
-      message: 'Rendez-vous confirmé',
+      message: 'Rendez-vous confirmé et consultation ajoutée au dossier médical',
       data: rendezVous
     });
   } catch (error) {
