@@ -34,10 +34,10 @@ const userSchema = new Schema({
     role: { 
         type: String,
         required: true,
-        enum: ['admin', 'medecin', 'patient', 'infirmier']
+        enum: ['admin', 'medecin', 'patient', 'infirmier', 'technicien-lab', 'pharmacien']
     },
 
-    specialty: {
+    specialty: { 
         type: String,
         required: function() {
             return this.role === 'medecin';
