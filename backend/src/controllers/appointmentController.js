@@ -244,6 +244,7 @@ export const mesRendezVous = async (req, res) => {
 export const confirmerRendezVous = async (req, res) => {
   try {
     const { id } = req.params;
+    const { pharmacienId, medicaments } = req.body; // pharmacien et médicaments doivent être fournis
 
     const rendezVous = await Appointment.findByIdAndUpdate(
       id,
@@ -266,10 +267,18 @@ export const confirmerRendezVous = async (req, res) => {
       });
     }
 
-    // Création de l'ordonnance (vide ou à compléter)
+    // Vérification obligatoire de l'ordonnance
+    if (!pharmacienId || !medicaments || !Array.isArray(medicaments) || medicaments.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "L'ordonnance doit contenir un pharmacien et au moins un médicament."
+      });
+    }
+
+    // Création de l'ordonnance
     const ordonnance = await Ordonnance.create({
-      pharmacien: null, // à compléter plus tard
-      medicaments: []
+      pharmacien: pharmacienId,
+      medicaments: medicaments // [{ name, dosage }, ...]
     });
 
     // Création de la consultation
@@ -286,7 +295,7 @@ export const confirmerRendezVous = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Rendez-vous confirmé et consultation ajoutée au dossier médical',
+      message: 'Rendez-vous confirmé, consultation et ordonnance enregistrées',
       data: rendezVous
     });
   } catch (error) {
