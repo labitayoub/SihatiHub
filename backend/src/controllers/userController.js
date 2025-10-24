@@ -36,7 +36,7 @@ export const loginController = async (req, res) => {
 
 export const createStaffController = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, phone, birthDate, address, role, specialty } = req.body;
+        const { firstName, lastName, email, password, phone, birthDate, address, role, specialty,nom } = req.body;
         
         const { statusCode, data } = await createStaff({ 
             firstName, 
@@ -47,7 +47,8 @@ export const createStaffController = async (req, res) => {
             birthDate, 
             address, 
             role, 
-            specialty 
+            specialty,
+            nom
         });
         
         res.status(statusCode).json(data);

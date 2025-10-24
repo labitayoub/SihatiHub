@@ -84,7 +84,7 @@ export const register = async ({ firstName, lastName, email, password, phone, bi
     };
 };
 
-export const createStaff = async ({ firstName, lastName, email, password, phone, birthDate, address, role, specialty }) => {
+export const createStaff = async ({ firstName, lastName, email, password, phone, birthDate, address, role, specialty, nom }) => {
 
     if (!firstName || !lastName || !phone || !birthDate || !address || !role || !email || !password) {
         return {
@@ -129,6 +129,12 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
             statusCode: 400
         };
     }
+    if (role === 'lab'|| 'pharmacien' && !nom) {
+        return {
+            data: { message: "La le nom est requise" },
+            statusCode: 400
+        };
+    }
 
     const findUser = await userModel.findOne({ email });
     if (findUser) {
@@ -149,22 +155,33 @@ export const createStaff = async ({ firstName, lastName, email, password, phone,
         birthDate,
         address,
         role,
-        specialty: role === 'medecin' ? specialty : undefined
+        specialty: role === 'medecin' ? specialty : undefined,
+        nom: role === 'lab'|| 'pharmacien' ? nom : undefined
     });
 
     return { 
         data: {
-            message: `${role === 'medecin' ? 'Médecin' : 'Infirmier'} créé avec succès`,
+            message:
+                role === 'medecin'
+                    ? 'Médecin créé avec succès'
+                    : role === 'infirmier'
+                    ? 'Infirmier créé avec succès'
+                    : role === 'lab'
+                    ? 'Laboratoire créé avec succès'
+                    : role === 'pharmacien'
+                    ? 'Pharmacien créé avec succès'
+                    : 'Personnel créé avec succès',
             user: {
                 id: newUser._id,
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
                 email: newUser.email,
                 role: newUser.role,
-                ...(role === 'medecin' && { specialty: newUser.specialty })
+                ...(role === 'medecin' && { specialty: newUser.specialty }),
+                ...((role === 'lab' || role === 'pharmacien') ? { nom: newUser.nom } : {})
             }
-        }, 
-        statusCode: 201 
+        },
+        statusCode: 201
     };
 };
 
