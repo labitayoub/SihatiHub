@@ -43,10 +43,10 @@ const userSchema = new Schema({
             return this.role === 'medecin';
         }
     },
-        nom: { 
+    nom: { 
         type: String,
         required: function() {
-            return this.role === 'pharmacien'|| 'lab';
+            return this.role === 'pharmacien' || this.role === 'lab';
         }
     }
 }, { timestamps: true });

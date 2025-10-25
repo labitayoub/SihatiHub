@@ -1,5 +1,6 @@
 import Appointment from '../models/Appointment.js';
 import DoctorSchedule from '../models/DoctorSchedule.js';
+import Ordonnance from '../models/Ordonnance.js'
 
 // Fonction pour générer les créneaux horaires
 
@@ -258,10 +259,10 @@ export const confirmerRendezVous = async (req, res) => {
     }
 
     // Création automatique du dossier médical si inexistant (patient uniquement)
-    let medicalRecord = await MedicalRecord.findOne({ patient: rendezVous.patientId._id });
+    let medicalRecord = await medicalRecord.findOne({ patient: rendezVous.patientId._id });
 
     if (!medicalRecord) {
-      medicalRecord = await MedicalRecord.create({
+      medicalRecord = await medicalRecord.create({
         patient: rendezVous.patientId._id,
         consultations: []
       });
@@ -282,7 +283,7 @@ export const confirmerRendezVous = async (req, res) => {
     });
 
     // Création de la consultation
-    const consultation = await Consultation.create({
+    const consultation = await consultation.create({
       date: new Date(rendezVous.date),
       patient: rendezVous.patientId._id,
       doctor: rendezVous.doctorId._id,
