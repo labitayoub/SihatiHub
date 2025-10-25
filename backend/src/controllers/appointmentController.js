@@ -1,4 +1,5 @@
 import Appointment from '../models/Appointment.js';
+import Consultation from '../models/Consultation.js';
 import DoctorSchedule from '../models/DoctorSchedule.js';
 import Ordonnance from '../models/Ordonnance.js'
 
@@ -283,7 +284,7 @@ export const confirmerRendezVous = async (req, res) => {
     });
 
     // Création de la consultation
-    const consultation = await consultation.create({
+    const consultation = await Consultation.create({
       date: new Date(rendezVous.date),
       patient: rendezVous.patientId._id,
       doctor: rendezVous.doctorId._id,

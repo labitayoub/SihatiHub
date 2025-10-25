@@ -1,6 +1,7 @@
 import express from 'express';
 import userRoute from './routes/userRoute.js';
 import appointmentRoute from './routes/appointmentRoute.js';
+import consultationRoute from './routes/consultationRoute.js';
 
 const app = express();
 
@@ -9,6 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/user', userRoute);
 app.use('/rendez-vous', appointmentRoute);
+app.use('/consultation', consultationRoute);
 
 app.get('/', (req, res) => {
     res.send('<h2>SihatiHub API</h2>');
