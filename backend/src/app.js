@@ -2,6 +2,7 @@ import express from 'express';
 import userRoute from './routes/userRoute.js';
 import appointmentRoute from './routes/appointmentRoute.js';
 import consultationRoute from './routes/consultationRoute.js';
+import ordonnanceRoute from './routes/ordonnanceRoute.js';
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/user', userRoute);
 app.use('/rendez-vous', appointmentRoute);
 app.use('/consultation', consultationRoute);
+app.use('/ordonnances', ordonnanceRoute);
 
 app.get('/', (req, res) => {
     res.send('<h2>SihatiHub API</h2>');

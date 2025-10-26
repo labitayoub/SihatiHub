@@ -5,7 +5,6 @@ import {
   getConsultations,
   getConsultationById,
   updateConsultation,
-  deleteConsultation,
   confirmerStatutOrdonnance
 } from '../controllers/consultationController.js';
 
