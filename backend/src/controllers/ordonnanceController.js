@@ -19,7 +19,7 @@ export const ajouterOrdonnance = async (req, res) => {
       consultationId,
       { ordonnance: ordonnance._id },
       { new: true }
-    );
+    ).populate('ordonnance');
     if (!consultation) {
       return res.status(404).json({ success: false, message: 'Consultation non trouvée' });
     }
