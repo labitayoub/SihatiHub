@@ -245,8 +245,7 @@ export const mesRendezVous = async (req, res) => {
 
 export const confirmerRendezVous = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { pharmacienId, medicaments } = req.body; // pharmacien et médicaments doivent être fournis
+  const { id } = req.params;
 
     const rendezVous = await Appointment.findByIdAndUpdate(
       id,
@@ -260,10 +259,10 @@ export const confirmerRendezVous = async (req, res) => {
     }
 
     // Création automatique du dossier médical si inexistant (patient uniquement)
-    let medicalRecord = await medicalRecord.findOne({ patient: rendezVous.patientId._id });
+  let medicalRecord = await MedicalRecord.findOne({ patient: rendezVous.patientId._id });
 
     if (!medicalRecord) {
-      medicalRecord = await medicalRecord.create({
+      medicalRecord = await MedicalRecord.create({
         patient: rendezVous.patientId._id,
         consultations: []
       });
