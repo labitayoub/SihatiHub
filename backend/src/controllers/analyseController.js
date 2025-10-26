@@ -1,5 +1,5 @@
 
-import Analyse from "../models/Analyse";
+import Analyse from "../models/Analyse.js";
 import Consultation from "../models/Consultation.js";
 
 // Confirmer le statut de l'analyse (par le laboratoire)
@@ -72,4 +72,3 @@ export const ajouterAnalyse = async (req, res) => {
 			res.status(500).json({ success: false, error: error.message });
 		}
 	};
-

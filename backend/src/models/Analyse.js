@@ -23,7 +23,6 @@ const analyseSchema = new mongoose.Schema({
   },
   resultat: {
     type: String,
-    required: true
   },
 }, { timestamps: true });
 

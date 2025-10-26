@@ -22,7 +22,7 @@ export const creerConsultation = async (req, res) => {
 // Obtenir toutes les consultations
 export const getConsultations = async (req, res) => {
   try {
-    const consultations = await Consultation.find().populate('patient doctor ordonnance');
+    const consultations = await Consultation.find().populate('patient doctor ordonnance analyse');
     res.status(200).json({ success: true, data: consultations });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -33,7 +33,7 @@ export const getConsultations = async (req, res) => {
 export const getConsultationById = async (req, res) => {
   try {
     const { id } = req.params;
-    const consultation = await Consultation.findById(id).populate('patient doctor ordonnance');
+    const consultation = await Consultation.findById(id).populate('patient doctor ordonnance analyse');
     if (!consultation) {
       return res.status(404).json({ success: false, message: 'Consultation non trouvée' });
     }
@@ -53,6 +53,29 @@ export const updateConsultation = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Consultation non trouvée' });
     }
     res.status(200).json({ success: true, data: consultation });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Récupérer le dossier médical d'un patient
+export const getMedicalRecordByPatient = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+    const medicalRecord = await MedicalRecord.findOne({ patient: patientId })
+      .populate({
+        path: 'consultations',
+        populate: [
+          { path: 'doctor', select: 'firstName lastName specialty' },
+          { path: 'ordonnance' },
+          { path: 'analyse' }
+        ]
+      })
+      .populate({ path: 'patient', select: 'firstName lastName email' });
+    if (!medicalRecord) {
+      return res.status(404).json({ success: false, message: 'Dossier médical non trouvé' });
+    }
+    res.status(200).json({ success: true, data: medicalRecord });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
