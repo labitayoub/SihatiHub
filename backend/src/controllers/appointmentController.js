@@ -269,37 +269,18 @@ export const confirmerRendezVous = async (req, res) => {
       });
     }
 
-    // Vérification obligatoire de l'ordonnance
-    if (!pharmacienId || !medicaments || !Array.isArray(medicaments) || medicaments.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "L'ordonnance doit contenir un pharmacien et au moins un médicament."
-      });
-    }
 
-    // Création de l'ordonnance
-    const ordonnance = await Ordonnance.create({
-      pharmacien: pharmacienId,
-      medicaments: medicaments // [{ name, dosage }, ...]
-    });
-
-    // Création de la consultation
-    const consultation = await Consultation.create({
-      date: new Date(rendezVous.date),
-      patient: rendezVous.patientId._id,
-      doctor: rendezVous.doctorId._id,
-      ordonnance: ordonnance._id
-    });
-
-    // Ajout de la consultation au dossier médical
-    medicalRecord.consultations.push(consultation._id);
-    await medicalRecord.save();
-
-    res.status(200).json({
-      success: true,
-      message: 'Rendez-vous confirmé, consultation et ordonnance enregistrées',
-      data: rendezVous
-    });
+    // Création de la consultation sans ordonnance (sera ajoutée plus tard)
+  req.body.date = rendezVous.date;
+  req.body.patient = rendezVous.patientId._id;
+  req.body.doctor = rendezVous.doctorId._id;
+  req.body.creneau = rendezVous.creneau || null; // si disponible
+  req.body.status = 'en attente';
+  // Pas d'ordonnance à ce stade
+  // Import dynamique pour éviter les dépendances circulaires
+  const { creerConsultation } = await import('./consultationController.js');
+  await creerConsultation(req, res);
+  // ...existing code...
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
