@@ -4,8 +4,7 @@ import {
   creerConsultation,
   getConsultations,
   getConsultationById,
-  updateConsultation,
-  confirmerStatutOrdonnance
+  updateConsultation
 } from '../controllers/consultationController.js';
 
 const router = express.Router();

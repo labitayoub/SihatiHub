@@ -1,22 +1,5 @@
 import Consultation from '../models/Consultation.js';
 import MedicalRecord from '../models/MedicalRecord.js';
-// Confirmer le statut de l'ordonnance (par le pharmacien)
-export const confirmerStatutOrdonnance = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-    // On ne modifie que le champ 'status' de l'ordonnance liée à la consultation
-    const consultation = await Consultation.findById(id).populate('ordonnance');
-    if (!consultation || !consultation.ordonnance) {
-      return res.status(404).json({ success: false, message: 'Consultation ou ordonnance non trouvée' });
-    }
-    consultation.ordonnance.status = status;
-    await consultation.ordonnance.save();
-    res.status(200).json({ success: true, data: consultation.ordonnance });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
 
 // Créer une consultation
 export const creerConsultation = async (req, res) => {

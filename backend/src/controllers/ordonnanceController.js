@@ -1,3 +1,17 @@
+// Confirmer le statut de l'ordonnance (par le pharmacien)
+export const confirmerStatutOrdonnance = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    const ordonnance = await Ordonnance.findByIdAndUpdate(id, { status }, { new: true });
+    if (!ordonnance) {
+      return res.status(404).json({ success: false, message: 'Ordonnance non trouvée' });
+    }
+    res.status(200).json({ success: true, data: ordonnance });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 import Ordonnance from '../models/Ordonnance.js';
 import Consultation from '../models/Consultation.js';
 // Récupérer toutes les ordonnances liées au pharmacien connecté
