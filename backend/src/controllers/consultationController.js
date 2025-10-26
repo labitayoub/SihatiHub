@@ -1,3 +1,5 @@
+import Consultation from '../models/Consultation.js';
+import MedicalRecord from '../models/MedicalRecord.js';
 // Confirmer le statut de l'ordonnance (par le pharmacien)
 export const confirmerStatutOrdonnance = async (req, res) => {
   try {
@@ -15,8 +17,6 @@ export const confirmerStatutOrdonnance = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-import Consultation from '../models/Consultation.js';
-import MedicalRecord from '../models/MedicalRecord.js';
 
 // Créer une consultation
 export const creerConsultation = async (req, res) => {

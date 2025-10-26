@@ -1,5 +1,15 @@
 import Ordonnance from '../models/Ordonnance.js';
 import Consultation from '../models/Consultation.js';
+// Récupérer toutes les ordonnances liées au pharmacien connecté
+export const getOrdonnancesPharmacien = async (req, res) => {
+  try {
+    const pharmacienId = req.user._id;
+    const ordonnances = await Ordonnance.find({ pharmacien: pharmacienId }).populate('medicaments');
+    res.status(200).json({ success: true, data: ordonnances });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 // Ajout d'une ordonnance à une consultation (par le médecin)
 export const ajouterOrdonnance = async (req, res) => {

@@ -1,7 +1,9 @@
 
 import express from 'express';
 import { authenticate, authorize } from '../middlewares/authMiddleware.js';
-import { ajouterOrdonnance } from '../controllers/ordonnanceController.js';
+import { ajouterOrdonnance, getOrdonnancesPharmacien } from '../controllers/ordonnanceController.js';
+// Récupérer toutes les ordonnances liées au pharmacien connecté
+router.get('/mes-ordonnances', authenticate, authorize('pharmacien'), getOrdonnancesPharmacien);
 import { confirmerStatutOrdonnance } from '../controllers/consultationController.js';
 
 const router = express.Router();
