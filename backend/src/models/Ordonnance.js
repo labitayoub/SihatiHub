@@ -6,10 +6,24 @@ const MedicamentSchema = new mongoose.Schema({
 });
 
 const OrdonnanceSchema = new mongoose.Schema({
-  pharmacien: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  medicaments: [MedicamentSchema],
-  status: { type: String, default: 'en attente' }
 
-});
+  medicaments: [MedicamentSchema],
+consultation: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Consultation',
+    required: true
+  },
+
+  pharmacien: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['en attente', 'délivrée', 'annulée'],
+    default: 'en attente'
+  }
+}, { timestamps: true });
 
 export default mongoose.model('Ordonnance', OrdonnanceSchema);
