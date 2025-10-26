@@ -15,20 +15,6 @@ export const confirmerStatutOrdonnance = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-// Mettre à jour les informations d'une consultation (ex: ordonnance)
-export const updateConsultation = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updateData = req.body; // Peut contenir ordonnance ou autres infos
-    const consultation = await Consultation.findByIdAndUpdate(id, updateData, { new: true });
-    if (!consultation) {
-      return res.status(404).json({ success: false, message: 'Consultation non trouvée' });
-    }
-    res.status(200).json({ success: true, data: consultation });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
 import Consultation from '../models/Consultation.js';
 import MedicalRecord from '../models/MedicalRecord.js';
 
