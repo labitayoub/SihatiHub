@@ -4,7 +4,7 @@ import Consultation from '../models/Consultation.js';
 // Ajout d'une ordonnance à une consultation (par le médecin)
 export const ajouterOrdonnance = async (req, res) => {
   try {
-    const { id } = req.params;
+  const { consultationId } = req.params;
     const { pharmacien, medicaments } = req.body;
     if (!pharmacien || !medicaments || !Array.isArray(medicaments) || medicaments.length === 0) {
       return res.status(400).json({
@@ -16,7 +16,7 @@ export const ajouterOrdonnance = async (req, res) => {
     const ordonnance = await Ordonnance.create({ pharmacien, medicaments, status: 'en attente' });
     // Association à la consultation
     const consultation = await Consultation.findByIdAndUpdate(
-      id,
+      consultationId,
       { ordonnance: ordonnance._id },
       { new: true }
     );
