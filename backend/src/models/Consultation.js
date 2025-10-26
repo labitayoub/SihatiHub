@@ -4,7 +4,8 @@ const ConsultationSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   patient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   doctor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  ordonnance: { type: mongoose.Schema.Types.ObjectId, ref: 'Ordonnance' }
+  ordonnance: { type: mongoose.Schema.Types.ObjectId, ref: 'Ordonnance' },
+  analyse: { type: mongoose.Schema.Types.ObjectId, ref: 'Analyse' }
 }, { timestamps: true });
 
 export default mongoose.model('Consultation', ConsultationSchema);

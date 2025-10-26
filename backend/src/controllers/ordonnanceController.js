@@ -60,7 +60,6 @@ export const ajouterOrdonnance = async (req, res) => {
         message: "L'ordonnance doit contenir un pharmacien et au moins un médicament."
       });
     }
-
     // Création de l'ordonnance
     const ordonnance = await Ordonnance.create({
       consultation: consultationId, // <-- CORRECTION : Ajout de la référence à la consultation
@@ -74,11 +73,10 @@ export const ajouterOrdonnance = async (req, res) => {
       { ordonnance: ordonnance._id },
       { new: true }
     ).populate('ordonnance');
-    
     if (!consultation) {
       return res.status(404).json({ success: false, message: 'Consultation non trouvée' });
     }
-
+    res.status(200).json({ success: true, data: consultation });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
