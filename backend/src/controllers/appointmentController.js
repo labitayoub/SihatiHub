@@ -1,3 +1,4 @@
+import MedicalRecord from '../models/MedicalRecord.js';
 import Appointment from '../models/Appointment.js';
 import Consultation from '../models/Consultation.js';
 import DoctorSchedule from '../models/DoctorSchedule.js';
@@ -244,6 +245,7 @@ export const mesRendezVous = async (req, res) => {
  */
 
 export const confirmerRendezVous = async (req, res) => {
+  if (!req.body) req.body = {};
   try {
   const { id } = req.params;
 

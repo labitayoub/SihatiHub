@@ -74,22 +74,3 @@ export const updateConsultation = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-
-// Supprimer une consultation
-export const deleteConsultation = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const consultation = await Consultation.findByIdAndDelete(id);
-    if (!consultation) {
-      return res.status(404).json({ success: false, message: 'Consultation non trouvée' });
-    }
-    // Retirer la consultation du dossier médical
-    await MedicalRecord.updateOne(
-      { consultations: id },
-      { $pull: { consultations: id } }
-    );
-    res.status(200).json({ success: true, message: 'Consultation supprimée' });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
