@@ -16,9 +16,7 @@ router.get('/:id', getConsultationById);
 router.put('/:id', updateConsultation);
 // Ajout de l'ordonnance à une consultation (par le docteur)
 router.patch('/:id/ordonnance', authenticate, authorize('medecin'), updateConsultation);
-// Confirmation du statut de l'ordonnance (par le pharmacien)
-
 // Route pour afficher le dossier médical d'un patient
-router.get('/medical-record/:patientId', getMedicalRecordByPatient);
+router.get('/medical-record/:patientId',authenticate, authorize('medecin','patient'), getMedicalRecordByPatient);
 
 export default router;
