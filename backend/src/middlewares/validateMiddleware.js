@@ -1,8 +1,27 @@
+
+import Joi from 'joi';
+
 /**
- * Middleware pour valider les données de réservation de rendez-vous
+ * Middleware pour valider les données d'analyse avec Joi
  */
-export const validateAppointment = (req, res, next) => {
-  const { doctorId, patientId, date, time } = req.body;
+export const validateAnalyse = (req, res, next) => {
+  const analyseSchema = Joi.object({
+    consultation: Joi.string().required(),
+    lab: Joi.string().required(),
+    description: Joi.string().required(),
+    status: Joi.string().valid('en attente', 'délivrée').default('en attente'),
+    resultat: Joi.string().allow(''),
+  });
+
+  const { error } = analyseSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.details[0].message
+    });
+  }
+  next();
+};
 
   // Vérifier que tous les champs requis sont présents
   if (!doctorId || !patientId || !date || !time) {

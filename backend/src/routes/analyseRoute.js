@@ -1,6 +1,7 @@
 import express from 'express';
 import { authenticate, authorize } from '../middlewares/authMiddleware.js';
 import { getAnalysesLab, confirmerStatutAnalyse, ajouterAnalyse } from '../controllers/analyseController.js';
+import { validateAnalyse } from '../middlewares/validateMiddleware.js';
 
 
 const router = express.Router();
@@ -12,6 +13,6 @@ router.get('/lab', authenticate, authorize('lab'), getAnalysesLab);
 router.patch('/:id/confirmer', authenticate, authorize('lab'), confirmerStatutAnalyse);
 
 // Ajouter une analyse à une consultation (par le médecin)
-router.post('/consultation/:consultationId', authenticate, authorize('medecin'), ajouterAnalyse);
+router.post('/consultation/:consultationId', authenticate, authorize('medecin'), validateAnalyse, ajouterAnalyse);
 
 export default router;
