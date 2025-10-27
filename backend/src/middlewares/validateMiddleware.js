@@ -23,46 +23,7 @@ export const validateAnalyse = (req, res, next) => {
   next();
 };
 
-  // Vérifier que tous les champs requis sont présents
-  if (!doctorId || !patientId || !date || !time) {
-    return res.status(400).json({
-      success: false,
-      message: 'Veuillez fournir doctorId, patientId, date et time'
-    });
-  }
 
-  // Vérifier le format de la date (YYYY-MM-DD)
-  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  if (!dateRegex.test(date)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Format de date invalide. Utilisez YYYY-MM-DD (ex: 2025-10-20)'
-    });
-  }
-
-  // Vérifier que la date n'est pas dans le passé
-  const appointmentDate = new Date(date);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  if (appointmentDate < today) {
-    return res.status(400).json({
-      success: false,
-      message: 'Impossible de réserver un rendez-vous dans le passé'
-    });
-  }
-
-  // Vérifier le format de l'heure (HH:MM)
-  const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-  if (!timeRegex.test(time)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Format d\'heure invalide. Utilisez HH:MM (ex: 09:00)'
-    });
-  }
-
-  next();
-};
 
 /**
  * Middleware pour valider les horaires du médecin
@@ -130,6 +91,35 @@ export const validateSchedule = (req, res, next) => {
     }
   }
 
+  next();
+};
+
+/**
+ * Middleware pour valider les données de réservation de rendez-vous
+ */
+export const validateAppointment = (req, res, next) => {
+  const appointmentSchema = Joi.object({
+    doctorId: Joi.string().hex().length(24).required().messages({
+      'string.empty': 'Le champ doctorId ne peut pas être vide.',
+      'any.required': 'Le champ doctorId est requis.'
+    }),
+    patientId: Joi.string().hex().length(24).required().messages({
+      'string.empty': 'Le champ patientId ne peut pas être vide.',
+      'any.required': 'Le champ patientId est requis.'
+    }),
+    date: Joi.string().pattern(/^\d{4}-\d{2}-\d{2}$/).required().messages({
+      'string.pattern.base': 'Le format de la date doit être YYYY-MM-DD.'
+    }),
+    time: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required().messages({
+      'string.pattern.base': 'Le format de l\'heure doit être HH:MM.'
+    }),
+    motif: Joi.string().allow('').optional()
+  });
+
+  const { error } = appointmentSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ success: false, message: error.details[0].message });
+  }
   next();
 };
 
