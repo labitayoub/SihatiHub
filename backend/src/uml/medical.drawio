@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="dossier_medical_v2" name="Dossier Medical UML">
-        <mxGraphModel dx="614" dy="662" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+        <mxGraphModel dx="926" dy="421" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -25,7 +25,7 @@
                 <mxCell id="dossier" value="DossierMedical" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#dae8fc;strokeColor=#6c8ebf;rounded=1;" parent="1" vertex="1">
                     <mxGeometry x="600" y="450" width="280" height="180" as="geometry"/>
                 </mxCell>
-                <mxCell id="dossier-attr" value="_id: ObjectId&#xa;dateCreation: Date&#xa;patientId: ObjectId&#xa;consultation: ObjectId" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="dossier" vertex="1">
+                <mxCell id="dossier-attr" value="_id: ObjectId&#xa;dateCreation: Date&#xa;patientId: ObjectId&#xa;consultationId: ObjectId" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="dossier" vertex="1">
                     <mxGeometry y="30" width="280" height="70" as="geometry"/>
                 </mxCell>
                 <mxCell id="dossier-line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" parent="dossier" vertex="1">
@@ -64,12 +64,6 @@
                 <mxCell id="analyse-attr" value="_id: ObjectId&#xa;consultationId: ObjectIddate&#xa;labId:ObjectId&#xa;description: String&#xa;status: Enum&#xa;resultat: String&#xa;&#xa;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="analyse" vertex="1">
                     <mxGeometry y="30" width="220" height="110" as="geometry"/>
                 </mxCell>
-                <mxCell id="document" value="Document" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;fillColor=#f8cecc;strokeColor=#b85450;rounded=1;" parent="1" vertex="1">
-                    <mxGeometry x="600" y="730" width="280" height="140" as="geometry"/>
-                </mxCell>
-                <mxCell id="2" value="_id: ObjectId&#xa;typeDocument: String&#xa;cheminFichier: String&#xa;dateAjout: Date&#xa;dossierMedicalId: ObjectId" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="document" vertex="1">
-                    <mxGeometry y="30" width="280" height="110" as="geometry"/>
-                </mxCell>
                 <mxCell id="rel1" value="" style="endArrow=diamondThin;endFill=1;endSize=20;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="dossier" target="user-methods" edge="1">
                     <mxGeometry width="160" relative="1" as="geometry">
                         <mxPoint x="600" y="400" as="sourcePoint"/>
@@ -96,17 +90,6 @@
                 <mxCell id="rel3-label" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel3" vertex="1" connectable="0">
                     <mxGeometry x="0.8" y="1" relative="1" as="geometry">
                         <mxPoint x="10" y="-10" as="offset"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="rel6" value="" style="endArrow=none;endFill=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="dossier" target="document" edge="1">
-                    <mxGeometry width="160" relative="1" as="geometry">
-                        <mxPoint x="740" y="700" as="sourcePoint"/>
-                        <mxPoint x="900" y="700" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="rel6-label" value="0..*" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="rel6" vertex="1" connectable="0">
-                    <mxGeometry x="0.6" y="1" relative="1" as="geometry">
-                        <mxPoint x="10" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="rel7" value="" style="endArrow=none;endFill=0;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="consultation" target="ordonnance" edge="1">

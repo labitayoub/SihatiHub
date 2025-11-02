@@ -20,6 +20,7 @@
     "express": "^5.1.0",
     "joi": "^18.0.1",
     "jsonwebtoken": "^9.0.2",
+    "minio": "^8.0.6",
     "mongoose": "^8.19.0",
     "morgan": "^1.10.1",
     "nodemailer": "^7.0.7",
@@ -28,8 +29,8 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "jest": "^30.2.0",
+    "mongodb-memory-server": "^10.1.4",
     "nodemon": "^3.1.10",
-    "supertest": "^7.1.4",
-    "mongodb-memory-server": "^10.1.4"
+    "supertest": "^7.1.4"
   }
 }
