@@ -2,7 +2,8 @@ import MedicalRecord from '../models/MedicalRecord.js';
 import Appointment from '../models/Appointment.js';
 import Consultation from '../models/Consultation.js';
 import DoctorSchedule from '../models/DoctorSchedule.js';
-import Ordonnance from '../models/Ordonnance.js'
+import Ordonnance from '../models/Ordonnance.js';
+import { creerConsultation } from './consultationController.js';
 
 // Fonction pour générer les créneaux horaires
 
@@ -278,10 +279,8 @@ export const confirmerRendezVous = async (req, res) => {
   req.body.creneau = rendezVous.creneau || null; // si disponible
   req.body.status = 'en attente';
   // Pas d'ordonnance à ce stade
-  // Import dynamique pour éviter les dépendances circulaires
-  const { creerConsultation } = await import('./consultationController.js');
+  
   await creerConsultation(req, res);
-  // ...existing code...
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

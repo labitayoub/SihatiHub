@@ -186,54 +186,62 @@ if (!['medecin', 'infirmier', 'pharmacien', 'lab'].includes(role)) {
 };
 
 export const login = async ({ email, password }) => {
+    try {
+        console.log('Login attempt for email:', email);
+        
+        if (!email || !password) {
+            return {
+                data: { message: "Email et mot de passe sont requis" },
+                statusCode: 400
+            };
+        }
 
-    if (!email || !password) {
-        return {
-            data: { message: "Email et mot de passe sont requis" },
-            statusCode: 400
-        };
-    }
+        const findUser = await userModel.findOne({ email });
+        console.log('User found:', findUser ? 'Yes' : 'No');
 
-    const findUser = await userModel.findOne({ email });
+        if (!findUser) {
+            return { 
+                data: { message: "Email ou mot de passe incorrect" }, 
+                statusCode: 401 
+            };
+        }
 
-    if (!findUser) {
+        const passwordMatch = await bcrypt.compare(password, findUser.password);
+        console.log('Password match:', passwordMatch);
+
+        if (!passwordMatch) {
+            return { 
+                data: { message: "Email ou mot de passe incorrect" }, 
+                statusCode: 401 
+            };
+        }
+
+        const token = generateJWT({     
+            id: findUser._id,
+            email: findUser.email,
+            firstName: findUser.firstName, 
+            lastName: findUser.lastName, 
+            role: findUser.role
+        });
+
         return { 
-            data: { message: "Email ou mot de passe incorrect" }, 
-            statusCode: 401 
+            data: {
+                message: "Connexion réussie",
+                token,
+                user: {
+                    id: findUser._id,
+                    firstName: findUser.firstName,
+                    lastName: findUser.lastName,
+                    email: findUser.email,
+                    role: findUser.role
+                }
+            }, 
+            statusCode: 200 
         };
+    } catch (error) {
+        console.error('Error in login service:', error);
+        throw error;
     }
-
-    const passwordMatch = await bcrypt.compare(password, findUser.password);
-
-    if (!passwordMatch) {
-        return { 
-            data: { message: "Email ou mot de passe incorrect" }, 
-            statusCode: 401 
-        };
-    }
-
-    const token = generateJWT({     
-        id: findUser._id,
-        email: findUser.email,
-        firstName: findUser.firstName, 
-        lastName: findUser.lastName, 
-        role: findUser.role
-    });
-
-    return { 
-        data: {
-            message: "Connexion réussie",
-            token,
-            user: {
-                id: findUser._id,
-                firstName: findUser.firstName,
-                lastName: findUser.lastName,
-                email: findUser.email,
-                role: findUser.role
-            }
-        }, 
-        statusCode: 200 
-    };
 };
 
 const generateJWT = (data) => {
