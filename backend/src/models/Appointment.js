@@ -21,7 +21,7 @@ const appointmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['en_attente', 'confirme', 'annule', 'termine'],
+        enum: ['en_attente', 'confirme', 'annule'],
         default: 'en_attente'
     },
     motif: String
