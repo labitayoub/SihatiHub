@@ -1,4 +1,8 @@
 // Confirmer le statut de l'ordonnance (par le pharmacien)
+import Ordonnance from '../models/Ordonnance.js';
+import Consultation from '../models/Consultation.js';
+
+
 export const confirmerStatutOrdonnance = async (req, res) => {
   try {
     const { id } = req.params;
@@ -18,19 +22,13 @@ export const confirmerStatutOrdonnance = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-import Ordonnance from '../models/Ordonnance.js';
-import Consultation from '../models/Consultation.js';
+
 // Récupérer toutes les ordonnances liées au pharmacien connecté
 export const getOrdonnancesPharmacien = async (req, res) => {
   try {
-    const pharmacienId = req.user.id; // <-- CORRECTION: Utiliser req.user.id au lieu de req.user._id
-    
-    // --- DEBUT DEBUG ---
-    console.log(`[DEBUG] Recherche d'ordonnances pour le pharmacien ID: ${pharmacienId}`);
-    console.log(`[DEBUG] Type de l'ID du pharmacien: ${typeof pharmacienId}`);
+    const pharmacienId = req.user.id; 
 
     const query = { pharmacien: pharmacienId };
-    console.log('[DEBUG] Requête Mongoose exécutée :', JSON.stringify(query));
 
     const ordonnances = await Ordonnance.find(query)
       .populate('medicaments')
@@ -39,9 +37,6 @@ export const getOrdonnancesPharmacien = async (req, res) => {
         select: 'date patient doctor', // Sélectionner les champs utiles
         populate: [{ path: 'patient', select: 'firstName lastName' }, { path: 'doctor', select: 'firstName lastName specialty' }]
       });
-
-    console.log(`[DEBUG] Nombre d'ordonnances trouvées: ${ordonnances.length}`);
-    // --- FIN DEBUG ---
 
     res.status(200).json({ success: true, data: ordonnances });
   } catch (error) {
