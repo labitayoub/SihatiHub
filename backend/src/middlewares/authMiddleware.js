@@ -68,3 +68,23 @@ export const isPatient = (req, res, next) => {
     }
     next();
 };
+
+export const isPharmacien = (req, res, next) => {
+    if (req.user.role != 'pharmacien') {
+        return res.status(403).json({ 
+            success: false,
+            message: "Accès réservé aux pharmaciens" 
+        });
+    }
+    next();
+};
+
+export const isLab = (req, res, next) => {
+    if (req.user.role != 'lab') {
+        return res.status(403).json({ 
+            success: false,
+            message: "Accès réservé aux laboratoires" 
+        });
+    }
+    next();
+};

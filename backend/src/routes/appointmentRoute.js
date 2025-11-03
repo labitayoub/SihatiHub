@@ -30,19 +30,19 @@ router.patch('/:id/confirmer', authenticate, isDoctor, confirmerRendezVous);
 
 // ========== ROUTES PROTÉGÉES - PATIENT ==========
 // Vérifier si un patient peut réserver avec un médecin
-router.get('/peut-reserver/:doctorId/:patientId', authenticate, peutReserver);
+router.get('/peut-reserver/:doctorId/:patientId', authenticate, isPatient, peutReserver);
 
 // Voir les créneaux disponibles (authentification requise)
-router.get('/disponibles', authenticate, validateAvailableSlots, voirCreneauxDisponibles);
+router.get('/disponibles', authenticate, isPatient, validateAvailableSlots, voirCreneauxDisponibles);
 
 // Réserver un rendez-vous (réservé aux patients)
 router.post('/reserver', authenticate, isPatient, validateAppointment, reserverRendezVous);
 
 // ========== ROUTES PROTÉGÉES - MÉDECIN OU PATIENT ==========
 // Voir ses rendez-vous (médecin ou patient)
-router.get('/mes-rendez-vous', authenticate, validateMyAppointments, mesRendezVous);
+router.get('/mes-rendez-vous', authenticate, authorize('medecin', 'patient'), validateMyAppointments, mesRendezVous);
 
 // Annuler un rendez-vous (médecin ou patient)
-router.delete('/:id/annuler', authenticate, annulerRendezVous);
+router.delete('/:id/annuler', authenticate, authorize('medecin', 'patient'), annulerRendezVous);
 
 export default router;
