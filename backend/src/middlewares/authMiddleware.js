@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-dotenv.config();
+// Only load .env file if environment variables are not already set (not in Docker)
+if (!process.env.JWT_SECRET) {
+    dotenv.config();
+}
 
 export const authenticate = (req, res, next) => {
     try { 
@@ -36,7 +39,6 @@ export const authorize = (...roles) => {
                 message: "Non authentifié" 
             });
         }
-
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({
                 success: false,

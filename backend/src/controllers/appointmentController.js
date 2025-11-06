@@ -203,7 +203,6 @@ export const reserverRendezVous = async (req, res) => {
 /**
  * @desc    MÉDECIN/PATIENT: Voir ses rendez-vous
  * @route   GET /rendez-vous/mes-rendez-vous?userId=xxx&role=xxx
- * @access  Public (à protéger plus tard)
  */
 
 export const mesRendezVous = async (req, res) => {

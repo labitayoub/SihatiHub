@@ -3,7 +3,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
-dotenv.config();
+// Only load .env file if environment variables are not already set (not in Docker)
+if (!process.env.JWT_SECRET) {
+    dotenv.config();
+}
 
 export const register = async ({ firstName, lastName, email, password, phone, birthDate, address }) => {
 

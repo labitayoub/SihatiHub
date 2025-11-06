@@ -3,7 +3,10 @@ import connectDB from './config/db.js';
 import dotenv from 'dotenv';
 import logger from './utils/logger.js';
 
-dotenv.config();
+// Only load .env file if environment variables are not already set (not in Docker)
+if (!process.env.MONGO_URI) {
+  dotenv.config();
+}
 
 const port = process.env.PORT || 3001;
 
