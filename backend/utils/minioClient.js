@@ -16,11 +16,21 @@ try {
 const Minio = require('minio');
 
 const MINIO_HOST = process.env.MINIO_HOST || '127.0.0.1';
-// Default to 9100 to match docker-compose mapping (MINIO_PORT=9100)
-const MINIO_PORT = parseInt(process.env.MINIO_PORT || '9100', 10);
+// Internal MinIO port (9000), external is mapped to 9100 in docker-compose
+const MINIO_PORT = parseInt(process.env.MINIO_PORT || '9000', 10);
 const MINIO_USE_SSL = (process.env.MINIO_USE_SSL === 'true') || false;
 const MINIO_ACCESS_KEY = process.env.MINIO_ROOT_USER || process.env.MINIO_ACCESS_KEY || 'admin';
 const MINIO_SECRET_KEY = process.env.MINIO_ROOT_PASSWORD || process.env.MINIO_SECRET_KEY || 'password';
+const MINIO_REGION = process.env.MINIO_REGION || 'us-east-1';
+
+console.log('🔧 MinIO Client Configuration:', {
+  endPoint: MINIO_HOST,
+  port: MINIO_PORT,
+  useSSL: MINIO_USE_SSL,
+  accessKey: MINIO_ACCESS_KEY ? '***' + MINIO_ACCESS_KEY.slice(-3) : 'NOT SET',
+  secretKey: MINIO_SECRET_KEY ? '***' + MINIO_SECRET_KEY.slice(-3) : 'NOT SET',
+  region: MINIO_REGION
+});
 
 const client = new Minio.Client({
   endPoint: MINIO_HOST,
@@ -28,6 +38,7 @@ const client = new Minio.Client({
   useSSL: MINIO_USE_SSL,
   accessKey: MINIO_ACCESS_KEY,
   secretKey: MINIO_SECRET_KEY,
+  region: MINIO_REGION,
 });
 
 /**

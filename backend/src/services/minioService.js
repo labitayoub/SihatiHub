@@ -31,27 +31,39 @@ export const initializeMinIOBuckets = async () => {
  */
 export const uploadFileToMinio = async (fileBuffer, originalName, mimetype, bucketName = BUCKET_DOCUMENTS) => {
   try {
+    console.log('📤 Starting file upload to MinIO...');
+    console.log('  - Bucket:', bucketName);
+    console.log('  - Original name:', originalName);
+    console.log('  - MIME type:', mimetype);
+    console.log('  - Buffer size:', fileBuffer.length);
+    
     // Ensure bucket exists
     await ensureBucket(bucketName);
 
     // Generate unique filename
     const fileExtension = path.extname(originalName);
     const fileName = `${Date.now()}_${uuidv4()}${fileExtension}`;
+    console.log('  - Generated filename:', fileName);
 
-    // Upload to MinIO
+    // Upload to MinIO with metadata
+    const metadata = {
+      'Content-Type': mimetype,
+    };
+    
+    console.log('  - Uploading to MinIO...');
     await minioClient.putObject(
       bucketName,
       fileName,
       fileBuffer,
       fileBuffer.length,
-      {
-        'Content-Type': mimetype,
-        'x-amz-meta-original-name': originalName
-      }
+      metadata
     );
+    console.log('  ✅ Upload successful!');
 
     // Generate file URL
+    console.log('  - Generating presigned URL...');
     const fileUrl = await getFileUrl(bucketName, fileName);
+    console.log('  ✅ URL generated:', fileUrl);
 
     return {
       fileName,
@@ -59,7 +71,13 @@ export const uploadFileToMinio = async (fileBuffer, originalName, mimetype, buck
       bucketName
     };
   } catch (error) {
-    console.error('Error uploading file to MinIO:', error);
+    console.error('❌ Error uploading file to MinIO:', error);
+    console.error('   Error details:', {
+      message: error.message,
+      code: error.code,
+      statusCode: error.statusCode,
+      region: error.region
+    });
     throw new Error(`Failed to upload file: ${error.message}`);
   }
 };

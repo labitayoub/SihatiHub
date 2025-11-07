@@ -15,6 +15,16 @@ import {
  */
 export const createDocument = async (req, res) => {
   try {
+    console.log('📄 Creating new document...');
+    console.log('  - User:', req.user?.id, req.user?.role);
+    console.log('  - Body:', req.body);
+    console.log('  - File:', req.file ? {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      hasBuffer: !!req.file.buffer
+    } : 'NO FILE');
+    
     const { titre, type, patient, analyse, ordonnance, consultation, description, tags, isPublic } = req.body;
     
     if (!req.file) {
@@ -38,8 +48,10 @@ export const createDocument = async (req, res) => {
     } else if (type === 'ordonnance') {
       bucketName = BUCKET_ORDONNANCES;
     }
+    console.log('  - Selected bucket:', bucketName);
 
     // Upload vers MinIO
+    console.log('  - Calling uploadFileToMinio...');
     const { fileName, fileUrl, bucketName: bucket } = await uploadFileToMinio(
       req.file.buffer,
       req.file.originalname,

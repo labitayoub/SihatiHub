@@ -6,11 +6,10 @@ import Joi from 'joi';
  */
 export const validateAnalyse = (req, res, next) => {
   const analyseSchema = Joi.object({
-    consultation: Joi.string().required(),
     lab: Joi.string().required(),
     description: Joi.string().required(),
-    status: Joi.string().valid('en attente', 'délivrée').default('en attente'),
-    resultat: Joi.string().allow(''),
+    status: Joi.string().valid('en attente', 'délivrée').optional(),
+    resultat: Joi.string().allow('').optional(),
   });
 
   const { error } = analyseSchema.validate(req.body);
@@ -20,6 +19,15 @@ export const validateAnalyse = (req, res, next) => {
       message: error.details[0].message
     });
   }
+  
+  // Vérifier que consultationId est présent dans les params
+  if (!req.params.consultationId) {
+    return res.status(400).json({
+      success: false,
+      message: 'consultationId est requis dans l\'URL'
+    });
+  }
+  
   next();
 };
 
