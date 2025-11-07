@@ -2,6 +2,7 @@ import Document from '../models/Document.js';
 import { 
   uploadFileToMinio, 
   deleteFileFromMinio, 
+  downloadFileFromMinio,
   getFileUrl, 
   BUCKET_LAB_REPORTS, 
   BUCKET_DOCUMENTS,
@@ -197,6 +198,67 @@ export const getDocumentById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Erreur lors de la récupération du document',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * @desc    Télécharger un document directement
+ * @route   GET /api/documents/:id/download
+ * @access  Private
+ */
+export const downloadDocument = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    console.log('📥 Downloading document:', id);
+
+    const document = await Document.findById(id);
+
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        message: 'Document non trouvé'
+      });
+    }
+
+    console.log('  - Document found:', document.fileName);
+    console.log('  - Bucket:', document.bucketName);
+    console.log('  - MIME type:', document.mimetype);
+
+    // Télécharger le fichier depuis MinIO
+    const fileBuffer = await downloadFileFromMinio(document.bucketName, document.fileName);
+
+    console.log('  ✅ File downloaded from MinIO, size:', fileBuffer.length);
+
+    // Déterminer le Content-Type (avec fallback)
+    const contentType = document.mimetype || 'application/octet-stream';
+    
+    // Extraire l'extension du fichier original dans MinIO
+    const fileExtension = document.fileName ? document.fileName.split('.').pop() : 'pdf';
+    
+    // Créer le nom de fichier à télécharger avec l'extension
+    let downloadFileName = document.titre || 'document';
+    if (!downloadFileName.includes('.')) {
+      downloadFileName += `.${fileExtension}`;
+    }
+
+    console.log('  - Download filename:', downloadFileName);
+
+    // Définir les headers pour le téléchargement
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${downloadFileName}"`);
+    res.setHeader('Content-Length', fileBuffer.length);
+
+    // Envoyer le fichier
+    res.send(fileBuffer);
+    console.log('  ✅ File sent to client');
+  } catch (error) {
+    console.error('❌ Error downloading document:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erreur lors du téléchargement du document',
       error: error.message
     });
   }

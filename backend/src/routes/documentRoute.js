@@ -3,6 +3,7 @@ import {
   createDocument,
   getAllDocuments,
   getDocumentById,
+  downloadDocument,
   updateDocument,
   deleteDocument,
   getDocumentsByUser,
@@ -24,6 +25,14 @@ router.post(
 
 // Récupérer tous les documents
 router.get('/', authenticate, getAllDocuments);
+
+// Télécharger un document directement (AVANT /:id pour éviter les conflits)
+router.get(
+  '/:id/download', 
+  authenticate, 
+  authorize('lab', 'medecin', 'admin'), 
+  downloadDocument
+);
 
 // Récupérer un document par ID
 router.get('/:id', authenticate, getDocumentById);
