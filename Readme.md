@@ -38,3 +38,39 @@ SihatiHub is a prototype EHR platform for clinics and medical offices, providing
 
 * Unit tests (Mocha/Chai)
 * Integration tests (Supertest + mongodb-memory-server)
+* **Postman Collection** - Collection complète avec 29 endpoints pour tests manuels
+
+## 📮 Postman Collection
+
+Une collection Postman complète est disponible pour tester toutes les fonctionnalités de l'API :
+
+### 📁 Fichiers disponibles
+- `SihatiHub_Postman_Collection.json` - Collection avec 29 requêtes
+- `SihatiHub_Environment.postman_environment.json` - Variables d'environnement
+- `POSTMAN_README.md` - Guide rapide
+- `POSTMAN_GUIDE.md` - Guide d'utilisation complet
+- `POSTMAN_TEST_SCENARIOS.md` - Scénarios de test et cas limites
+- `API_RESPONSE_EXAMPLES.md` - Exemples de réponses
+
+### 🚀 Quick Start
+
+**Windows PowerShell:**
+```powershell
+.\import-postman.ps1
+```
+
+**Import manuel:**
+1. Ouvrez Postman
+2. Cliquez sur **Import**
+3. Sélectionnez `SihatiHub_Postman_Collection.json` et `SihatiHub_Environment.postman_environment.json`
+4. Activez l'environnement "SihatiHub Environment"
+
+### 📋 Endpoints inclus (29 total)
+- **Authentication** (9) - Register/Login pour tous les rôles
+- **Rendez-vous** (9) - Gestion complète des appointments
+- **Consultations** (5) - Création et suivi
+- **Ordonnances** (3) - Prescriptions et délivrance
+- **Analyses** (3) - Tests de laboratoire
+
+### 📖 Documentation complète
+Consultez `POSTMAN_GUIDE.md` pour l'utilisation détaillée et `POSTMAN_TEST_SCENARIOS.md` pour les scénarios de test complets.

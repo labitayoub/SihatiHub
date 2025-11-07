@@ -3,7 +3,6 @@ import Appointment from '../models/Appointment.js';
 import Consultation from '../models/Consultation.js';
 import DoctorSchedule from '../models/DoctorSchedule.js';
 import Ordonnance from '../models/Ordonnance.js';
-import { creerConsultation } from './consultationController.js';
 
 // Fonction pour générer les créneaux horaires
 
@@ -178,8 +177,8 @@ export const reserverRendezVous = async (req, res) => {
       motif
     });
 
-    await rendezVous.populate('doctorId', 'name email');
-    await rendezVous.populate('patientId', 'name email');
+    await rendezVous.populate('doctorId', 'firstName lastName email');
+    await rendezVous.populate('patientId', 'firstName lastName email');
 
     res.status(201).json({
       success: true,
@@ -221,8 +220,8 @@ export const mesRendezVous = async (req, res) => {
       : { patientId: userId };
 
     const rendezVous = await Appointment.find(query)
-      .populate('doctorId', 'name email')
-      .populate('patientId', 'name email')
+      .populate('doctorId', 'firstName lastName email')
+      .populate('patientId', 'firstName lastName email')
       .sort({ date: 1, time: 1 });
 
     res.status(200).json({
@@ -245,42 +244,75 @@ export const mesRendezVous = async (req, res) => {
  */
 
 export const confirmerRendezVous = async (req, res) => {
-  if (!req.body) req.body = {};
   try {
-  const { id } = req.params;
+    const { id } = req.params;
+    console.log('🔵 Début de confirmation du rendez-vous:', id);
 
     const rendezVous = await Appointment.findByIdAndUpdate(
       id,
       { status: 'confirme' },
       { new: true }
-    ).populate('doctorId', 'name email')
-     .populate('patientId', 'name email');
+    ).populate('doctorId', 'firstName lastName email')
+     .populate('patientId', 'firstName lastName email');
 
     if (!rendezVous) {
+      console.log('❌ Rendez-vous non trouvé');
       return res.status(404).json({ success: false, message: 'Rendez-vous non trouvé' });
+    }
+    
+    console.log('✅ Rendez-vous trouvé:', rendezVous._id);
+    console.log('👤 Patient:', rendezVous.patientId);
+    console.log('👨‍⚕️ Médecin:', rendezVous.doctorId);
+
+    if (!rendezVous.patientId || !rendezVous.doctorId) {
+      console.log('❌ Données du rendez-vous incomplètes');
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Le rendez-vous ne contient pas les informations du patient ou du médecin' 
+      });
     }
 
     // Création automatique du dossier médical si inexistant (patient uniquement)
-  let medicalRecord = await MedicalRecord.findOne({ patient: rendezVous.patientId._id });
+    let medicalRecord = await MedicalRecord.findOne({ patient: rendezVous.patientId._id });
+    
+    console.log('📁 Dossier médical existant:', medicalRecord ? 'OUI' : 'NON');
 
     if (!medicalRecord) {
+      console.log('🆕 Création du dossier médical pour patient:', rendezVous.patientId._id);
       medicalRecord = await MedicalRecord.create({
         patient: rendezVous.patientId._id,
         consultations: []
       });
+      console.log('✅ Dossier médical créé:', medicalRecord._id);
     }
 
+    // Création de la consultation vide (sans ordonnance)
+    console.log('🆕 Création de la consultation...');
+    const consultation = await Consultation.create({
+      date: rendezVous.date,
+      patient: rendezVous.patientId._id,
+      doctor: rendezVous.doctorId._id
+      // ordonnance et analyse seront ajoutés plus tard
+    });
+    console.log('✅ Consultation créée:', consultation._id);
 
-    // Création de la consultation sans ordonnance (sera ajoutée plus tard)
-  req.body.date = rendezVous.date;
-  req.body.patient = rendezVous.patientId._id;
-  req.body.doctor = rendezVous.doctorId._id;
-  req.body.creneau = rendezVous.creneau || null; // si disponible
-  req.body.status = 'en attente';
-  // Pas d'ordonnance à ce stade
-  
-  await creerConsultation(req, res);
+    // Ajouter la consultation au dossier médical
+    medicalRecord.consultations.push(consultation._id);
+    await medicalRecord.save();
+    console.log('✅ Consultation ajoutée au dossier médical');
+    console.log('📊 Nombre de consultations:', medicalRecord.consultations.length);
+
+    res.status(200).json({
+      success: true,
+      message: 'Rendez-vous confirmé et consultation créée',
+      data: {
+        rendezVous,
+        consultation,
+        medicalRecord
+      }
+    });
   } catch (error) {
+    console.error('❌ ERREUR lors de la confirmation:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
@@ -298,8 +330,8 @@ export const annulerRendezVous = async (req, res) => {
       id,
       { status: 'annule' },
       { new: true }
-    ).populate('doctorId', 'name email')
-     .populate('patientId', 'name email');
+    ).populate('doctorId', 'firstName lastName email')
+     .populate('patientId', 'firstName lastName email');
 
     if (!rendezVous) {
       return res.status(404).json({
@@ -331,7 +363,7 @@ export const obtenirHoraires = async (req, res) => {
     const { doctorId } = req.params;
 
     const schedule = await DoctorSchedule.findOne({ doctorId })
-      .populate('doctorId', 'name email');
+      .populate('doctorId', 'firstName lastName email');
 
     if (!schedule) {
       return res.status(404).json({

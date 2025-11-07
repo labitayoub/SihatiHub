@@ -1,0 +1,1247 @@
+{
+	"info": {
+		"_postman_id": "sihati-hub-complete-collection",
+		"name": "SihatiHub - Complete API Collection",
+		"description": "Collection complète pour tester toutes les fonctionnalités de l'API SihatiHub incluant la gestion des utilisateurs, rendez-vous, consultations, ordonnances, analyses et documents médicaux.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "Endpoints pour l'inscription et la connexion des utilisateurs",
+			"item": [
+				{
+					"name": "Register Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.userId) {",
+									"        pm.environment.set('patientId', jsonData.userId);",
+									"    }",
+									"    pm.test('Patient registered successfully', function () {",
+									"        pm.response.to.have.status(201);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Doe\",\n  \"prenom\": \"John\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\",\n  \"telephone\": \"+212600000001\",\n  \"dateNaissance\": \"1990-01-15\",\n  \"adresse\": \"123 Rue Example, Casablanca\",\n  \"cin\": \"AB123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/register/patient",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"register",
+								"patient"
+							]
+						},
+						"description": "Inscription d'un nouveau patient"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('patientToken', jsonData.token);",
+									"    pm.environment.set('patientId', jsonData.user._id);",
+									"    pm.test('Login successful', function () {",
+									"        pm.response.to.have.status(200);",
+									"        pm.expect(jsonData.token).to.be.a('string');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						},
+						"description": "Connexion d'un patient"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Doctor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('doctorToken', jsonData.token);",
+									"    pm.environment.set('doctorId', jsonData.user._id);",
+									"    pm.test('Doctor login successful', function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"doctor@sihati.com\",\n  \"password\": \"Doctor123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						},
+						"description": "Connexion d'un médecin"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Lab",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('labToken', jsonData.token);",
+									"    pm.environment.set('labId', jsonData.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"lab@sihati.com\",\n  \"password\": \"Lab123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						},
+						"description": "Connexion du laboratoire"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Pharmacien",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('pharmacienToken', jsonData.token);",
+									"    pm.environment.set('pharmacienId', jsonData.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"pharmacien@sihati.com\",\n  \"password\": \"Pharmacien123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						},
+						"description": "Connexion d'un pharmacien"
+					},
+					"response": []
+				},
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('adminToken', jsonData.token);",
+									"    pm.environment.set('adminId', jsonData.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@sihati.com\",\n  \"password\": \"Admin123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						},
+						"description": "Connexion de l'administrateur"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Staff (Admin Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nom\": \"Smith\",\n  \"prenom\": \"Jane\",\n  \"email\": \"jane.doctor@sihati.com\",\n  \"password\": \"Doctor123!\",\n  \"telephone\": \"+212600000002\",\n  \"dateNaissance\": \"1985-05-20\",\n  \"adresse\": \"456 Medical Center, Rabat\",\n  \"cin\": \"CD789012\",\n  \"role\": \"medecin\",\n  \"specialite\": \"Cardiologie\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user/register/staff",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user",
+								"register",
+								"staff"
+							]
+						},
+						"description": "Création d'un membre du personnel (médecin, lab, pharmacien) par l'admin"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Appointments",
+			"description": "Gestion des rendez-vous médicaux",
+			"item": [
+				{
+					"name": "Définir Horaires (Doctor)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.scheduleId) {",
+									"        pm.environment.set('scheduleId', jsonData.scheduleId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jour\": \"Lundi\",\n  \"heureDebut\": \"09:00\",\n  \"heureFin\": \"17:00\",\n  \"dureeConsultation\": 30\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/horaires",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"horaires"
+							]
+						},
+						"description": "Le médecin définit ses horaires de disponibilité"
+					},
+					"response": []
+				},
+				{
+					"name": "Obtenir Horaires Doctor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/horaires/{{doctorId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"horaires",
+								"{{doctorId}}"
+							]
+						},
+						"description": "Récupérer les horaires d'un médecin (public)"
+					},
+					"response": []
+				},
+				{
+					"name": "Voir Créneaux Disponibles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{patientToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/disponibles?doctorId={{doctorId}}&date=2025-11-10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"disponibles"
+							],
+							"query": [
+								{
+									"key": "doctorId",
+									"value": "{{doctorId}}"
+								},
+								{
+									"key": "date",
+									"value": "2025-11-10"
+								}
+							]
+						},
+						"description": "Voir les créneaux disponibles pour un médecin à une date donnée"
+					},
+					"response": []
+				},
+				{
+					"name": "Peut Réserver",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{patientToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/peut-reserver/{{doctorId}}/{{patientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"peut-reserver",
+								"{{doctorId}}",
+								"{{patientId}}"
+							]
+						},
+						"description": "Vérifier si un patient peut réserver avec un médecin"
+					},
+					"response": []
+				},
+				{
+					"name": "Réserver Rendez-vous",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.appointmentId) {",
+									"        pm.environment.set('appointmentId', jsonData.appointmentId);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{patientToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"doctorId\": \"{{doctorId}}\",\n  \"date\": \"2025-11-10\",\n  \"heure\": \"10:00\",\n  \"motif\": \"Consultation de routine\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/reserver",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"reserver"
+							]
+						},
+						"description": "Réserver un rendez-vous avec un médecin"
+					},
+					"response": []
+				},
+				{
+					"name": "Mes Rendez-vous (Patient)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{patientToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/mes-rendez-vous?role=patient",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"mes-rendez-vous"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "patient"
+								}
+							]
+						},
+						"description": "Voir tous les rendez-vous du patient connecté"
+					},
+					"response": []
+				},
+				{
+					"name": "Mes Rendez-vous (Doctor)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/mes-rendez-vous?role=medecin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"mes-rendez-vous"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "medecin"
+								}
+							]
+						},
+						"description": "Voir tous les rendez-vous du médecin connecté"
+					},
+					"response": []
+				},
+				{
+					"name": "Confirmer Rendez-vous (Doctor)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/{{appointmentId}}/confirmer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"{{appointmentId}}",
+								"confirmer"
+							]
+						},
+						"description": "Le médecin confirme un rendez-vous"
+					},
+					"response": []
+				},
+				{
+					"name": "Annuler Rendez-vous (Patient)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{patientToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/rendez-vous/{{appointmentId}}/annuler",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"rendez-vous",
+								"{{appointmentId}}",
+								"annuler"
+							]
+						},
+						"description": "Annuler un rendez-vous"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Consultations",
+			"description": "Gestion des consultations médicales",
+			"item": [
+				{
+					"name": "Créer Consultation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData._id) {",
+									"        pm.environment.set('consultationId', jsonData._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"motif\": \"Douleurs thoraciques\",\n  \"diagnostic\": \"Possible angine de poitrine\",\n  \"traitement\": \"Repos et médicaments anticoagulants\",\n  \"notes\": \"Patient à surveiller, rendez-vous de suivi dans 2 semaines\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/consultation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"consultation"
+							]
+						},
+						"description": "Le médecin crée une consultation après un rendez-vous"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Consultations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/consultation",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"consultation"
+							]
+						},
+						"description": "Récupérer toutes les consultations"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Consultation By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/consultation/{{consultationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"consultation",
+								"{{consultationId}}"
+							]
+						},
+						"description": "Récupérer une consultation spécifique"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Consultation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"diagnostic\": \"Angine de poitrine confirmée\",\n  \"traitement\": \"Nitroglycérine et modification du mode de vie\",\n  \"notes\": \"Patient répond bien au traitement initial\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/consultation/{{consultationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"consultation",
+								"{{consultationId}}"
+							]
+						},
+						"description": "Mettre à jour une consultation existante"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Medical Record By Patient",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{patientToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/consultation/medical-record/{{patientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"consultation",
+								"medical-record",
+								"{{patientId}}"
+							]
+						},
+						"description": "Afficher le dossier médical complet d'un patient"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Analyses",
+			"description": "Gestion des analyses médicales",
+			"item": [
+				{
+					"name": "Ajouter Analyse à Consultation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.analyse && jsonData.analyse._id) {",
+									"        pm.environment.set('analyseId', jsonData.analyse._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"typeAnalyse\": \"Prise de sang\",\n  \"labId\": \"{{labId}}\",\n  \"description\": \"Bilan lipidique complet et glycémie\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/analyses/consultation/{{consultationId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"analyses",
+								"consultation",
+								"{{consultationId}}"
+							]
+						},
+						"description": "Le médecin prescrit une analyse médicale pour une consultation"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Analyses Lab",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{labToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/analyses/lab",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"analyses",
+								"lab"
+							]
+						},
+						"description": "Le laboratoire récupère toutes ses analyses"
+					},
+					"response": []
+				},
+				{
+					"name": "Confirmer Statut Analyse",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{labToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"statut\": \"terminée\",\n  \"resultat\": \"Cholestérol total: 200 mg/dL, LDL: 120 mg/dL, HDL: 55 mg/dL, Triglycérides: 150 mg/dL, Glycémie: 95 mg/dL - Valeurs dans la norme\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/analyses/{{analyseId}}/confirmer",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"analyses",
+								"{{analyseId}}",
+								"confirmer"
+							]
+						},
+						"description": "Le laboratoire confirme et ajoute les résultats d'une analyse"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ordonnances",
+			"description": "Gestion des ordonnances",
+			"item": [
+				{
+					"name": "Ajouter Ordonnance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.ordonnance && jsonData.ordonnance._id) {",
+									"        pm.environment.set('ordonnanceId', jsonData.ordonnance._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"medicaments\": [\n    {\n      \"nom\": \"Aspirine\",\n      \"dosage\": \"100mg\",\n      \"frequence\": \"1 fois par jour\",\n      \"duree\": \"30 jours\"\n    },\n    {\n      \"nom\": \"Atorvastatine\",\n      \"dosage\": \"20mg\",\n      \"frequence\": \"1 fois par jour le soir\",\n      \"duree\": \"90 jours\"\n    }\n  ],\n  \"pharmacienId\": \"{{pharmacienId}}\",\n  \"instructions\": \"À prendre après les repas. Éviter l'alcool.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ordonnances/{{consultationId}}/ajouter",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ordonnances",
+								"{{consultationId}}",
+								"ajouter"
+							]
+						},
+						"description": "Le médecin ajoute une ordonnance à une consultation"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ordonnances Pharmacien",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{pharmacienToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/ordonnances/mes-ordonnances",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ordonnances",
+								"mes-ordonnances"
+							]
+						},
+						"description": "Le pharmacien récupère toutes ses ordonnances"
+					},
+					"response": []
+				},
+				{
+					"name": "Confirmer Statut Ordonnance",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{pharmacienToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"statut\": \"délivrée\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ordonnances/{{ordonnanceId}}/confirmer-ordonnance",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ordonnances",
+								"{{ordonnanceId}}",
+								"confirmer-ordonnance"
+							]
+						},
+						"description": "Le pharmacien confirme la délivrance d'une ordonnance"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"description": "Gestion des documents médicaux (résultats d'analyses, radiographies, etc.)",
+			"item": [
+				{
+					"name": "Create Document",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData._id) {",
+									"        pm.environment.set('documentId', jsonData._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{labToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "nom",
+									"value": "Résultat Analyse Sanguine",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "analyse",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Résultats complets du bilan lipidique",
+									"type": "text"
+								},
+								{
+									"key": "userId",
+									"value": "{{patientId}}",
+									"type": "text"
+								},
+								{
+									"key": "analyseId",
+									"value": "{{analyseId}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/documents/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"documents",
+								"create"
+							]
+						},
+						"description": "Créer un document médical (par Lab/Doctor/Admin)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Documents",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctorToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/documents/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"documents",
+								""
+							]
+						},
+						"description": "Récupérer tous les documents"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Document By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{patientToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/documents/{{documentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
+							]
+						},
+						"description": "Récupérer un document spécifique"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Documents By User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{patientToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/documents/user/{{patientId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"documents",
+								"user",
+								"{{patientId}}"
+							]
+						},
+						"description": "Récupérer tous les documents d'un patient"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Documents By Analyse",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{labToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/documents/analyse/{{analyseId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"documents",
+								"analyse",
+								"{{analyseId}}"
+							]
+						},
+						"description": "Récupérer tous les documents liés à une analyse"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Document",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{labToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nom",
+									"value": "Résultat Analyse Sanguine - Mise à jour",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Résultats complets et commentaires du biologiste",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/documents/{{documentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
+							]
+						},
+						"description": "Mettre à jour un document existant"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Document",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/documents/{{documentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"documents",
+								"{{documentId}}"
+							]
+						},
+						"description": "Supprimer un document"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

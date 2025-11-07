@@ -1,0 +1,374 @@
+{
+  "info": {
+    "name": "SihatiHub - Documents API",
+    "description": "Collection Postman pour tester l'API de gestion de documents avec MinIO",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "1. Créer un document (Analyse Lab)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "titre",
+              "value": "Analyse sanguine complète",
+              "type": "text"
+            },
+            {
+              "key": "type",
+              "value": "analyse",
+              "type": "text"
+            },
+            {
+              "key": "patient",
+              "value": "{{patientId}}",
+              "description": "ID du patient",
+              "type": "text"
+            },
+            {
+              "key": "analyse",
+              "value": "{{analyseId}}",
+              "description": "ID de l'analyse",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "Résultats d'analyse sanguine du patient",
+              "type": "text"
+            },
+            {
+              "key": "tags",
+              "value": "[\"sanguin\", \"complet\", \"laboratoire\"]",
+              "type": "text"
+            },
+            {
+              "key": "isPublic",
+              "value": "false",
+              "type": "text"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/documents/create",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "create"]
+        },
+        "description": "Upload un document d'analyse par le laboratoire"
+      }
+    },
+    {
+      "name": "2. Créer un document (Ordonnance)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "titre",
+              "value": "Ordonnance médicale",
+              "type": "text"
+            },
+            {
+              "key": "type",
+              "value": "ordonnance",
+              "type": "text"
+            },
+            {
+              "key": "patient",
+              "value": "{{patientId}}",
+              "type": "text"
+            },
+            {
+              "key": "ordonnance",
+              "value": "{{ordonnanceId}}",
+              "type": "text"
+            },
+            {
+              "key": "consultation",
+              "value": "{{consultationId}}",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "Ordonnance suite à consultation",
+              "type": "text"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/documents/create",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "create"]
+        }
+      }
+    },
+    {
+      "name": "3. Récupérer tous les documents",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/documents?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents"],
+          "query": [
+            {
+              "key": "type",
+              "value": "analyse",
+              "disabled": true
+            },
+            {
+              "key": "patient",
+              "value": "{{patientId}}",
+              "disabled": true
+            },
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Récupère tous les documents avec pagination"
+      }
+    },
+    {
+      "name": "4. Récupérer un document par ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/documents/{{documentId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "{{documentId}}"]
+        }
+      }
+    },
+    {
+      "name": "5. Récupérer documents d'un patient",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/documents/user/{{patientId}}?type=analyse",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "user", "{{patientId}}"],
+          "query": [
+            {
+              "key": "type",
+              "value": "analyse"
+            }
+          ]
+        },
+        "description": "Récupère tous les documents d'un patient spécifique"
+      }
+    },
+    {
+      "name": "6. Récupérer documents par analyse",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/documents/analyse/{{analyseId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "analyse", "{{analyseId}}"]
+        },
+        "description": "Récupère tous les documents liés à une analyse"
+      }
+    },
+    {
+      "name": "7. Mettre à jour un document",
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "titre",
+              "value": "Titre modifié",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "Description mise à jour",
+              "type": "text"
+            },
+            {
+              "key": "tags",
+              "value": "[\"nouveau\", \"tag\"]",
+              "type": "text"
+            },
+            {
+              "key": "isPublic",
+              "value": "true",
+              "type": "text"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": [],
+              "disabled": true
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/documents/{{documentId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "{{documentId}}"]
+        },
+        "description": "Mettre à jour les métadonnées ou remplacer le fichier"
+      }
+    },
+    {
+      "name": "8. Supprimer un document",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/documents/{{documentId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["documents", "{{documentId}}"]
+        },
+        "description": "Supprime le document de MinIO et MongoDB"
+      }
+    },
+    {
+      "name": "Auth - Login (Lab)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.token) {",
+              "    pm.environment.set(\"authToken\", jsonData.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"lab@example.com\",\n  \"password\": \"password123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["user", "login"]
+        },
+        "description": "Login en tant que laboratoire"
+      }
+    },
+    {
+      "name": "Auth - Login (Médecin)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.token) {",
+              "    pm.environment.set(\"authToken\", jsonData.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"doctor@example.com\",\n  \"password\": \"password123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/user/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["user", "login"]
+        },
+        "description": "Login en tant que médecin"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "patientId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "analyseId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ordonnanceId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "consultationId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "documentId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

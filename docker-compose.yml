@@ -1,33 +1,48 @@
-# version: '3.8'
-
 services:
-  # MongoDB Database
-  mongodb:
-    image: mongo:7-jammy
-    container_name: sihati_mongodb
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: sihati_admin
-      MONGO_INITDB_ROOT_PASSWORD: sihati_password_123
-      MONGO_INITDB_DATABASE: sihati_db
+
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     ports:
-      - "27017:27017"
+      - "${PORT:-3000}:${PORT:-3000}"
     volumes:
-      - mongodb_data:/data/db
-      - mongodb_config:/data/configdb
+      - ./backend:/app
+      - /app/node_modules
+    env_file:
+      - ./backend/.env.docker
+    depends_on:
+      - mongo 
+      - redis
+      - maildev
     networks:
-      - sihati_network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - carflow-network
+
+  mongo:
+    image: mongo:6.0
+    command: mongod --port ${MONGODB_PORT:-27018}
+    ports:
+      - "${MONGODB_PORT:-27018}:${MONGODB_PORT:-27018}"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - carflow-network
+
+  # Service pour Redis
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - carflow-network
+
+  # Service pour MinIO (stockage de fichiers compatible S3)
   minio:
     image: minio/minio:latest
-    container_name: sihati_minio
-    restart: unless-stopped
     ports:
-      - "${MINIO_PORT:-9100}:9000"  # API MinIO (host:container)
+      - "${MINIO_PORT:-9100}:9000"  # API MinIO (9100 externe -> 9000 interne)
       - "9001:9001"  # Console MinIO
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
@@ -36,114 +51,23 @@ services:
       - minio-data:/data  # Persistance des données MinIO
     command: server --console-address ":9001" /data
     networks:
-      - sihati_network
+      - carflow-network
+    # Note: healthcheck removed because some MinIO images don't include mc command.
 
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    container_name: sihati_redis
-    restart: unless-stopped
+  # MailDev - simple SMTP server for development/testing
+  maildev:
+    image: maildev/maildev:latest
     ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - "1025:1025"  # SMTP
+      - "1080:1080"  # Web UI
     networks:
-      - sihati_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+      - carflow-network
 
-  # Backend API
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: sihati_backend
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
-    environment:
-      MONGODB_URI: mongodb://sihati_admin:sihati_password_123@mongodb:27017/sihati_db?authSource=admin
-      REDIS_URL: redis://redis:6379
-      NODE_ENV: production
-      JWT_SECRET: your_jwt_secret_key_here
-    depends_on:
-      mongodb:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    networks:
-      - sihati_network
-
-  # Frontend Application
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: sihati_frontend
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      REACT_APP_API_URL: http://localhost:8000/api
-      NODE_ENV: production
-    depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    networks:
-      - sihati_network
-
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: sihati_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
-    depends_on:
-      - frontend
-      - backend
-    networks:
-      - sihati_network
-
-  # Mongo Express (optional - MongoDB GUI)
-  mongo-express:
-    image: mongo-express:latest
-    container_name: sihati_mongo_express
-    restart: unless-stopped
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: sihati_admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: sihati_password_123
-      ME_CONFIG_MONGODB_URL: mongodb://sihati_admin:sihati_password_123@mongodb:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin123
-    depends_on:
-      - mongodb
-    networks:
-      - sihati_network
 volumes:
-  mongodb_data:
-    driver: local
-  mongodb_config:
-    driver: local
-  redis_data:
-    driver: local
-  minio-data:
-    driver: local
+  mongo-data: {}
+  redis-data: {}
+  minio-data: {}
 
 networks:
-  sihati_network:
+  carflow-network:  # Définition d'un réseau personnalisé pour les services
     driver: bridge
